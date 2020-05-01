@@ -1,4 +1,4 @@
-##Python 3 "Black Hat Python" Source Code
+## Python 3 "Black Hat Python" Source Code
 
 #### Description
 Source code for the book "Black Hat Python" by Justin Seitz (No Starch Press). The code has been fully converted to Python 3 and reformatted to comply with PEP8 standards.
