@@ -36,10 +36,20 @@ been applied to the files as necessary in order to relate them to the code
 presented in the book.
 - Minor bugs that generated warnings by the interpreter have been fixed
  throughout the code without altering its characteristics.
-- Auxiliary files that were required to make the code work (like the
- *test_rsa.key* necessary on Chapter 2) were added to their respective 
- chapters.
+- Auxiliary files that were required to make the code work were added to their 
+respective chapters.
 - As a personal side-note, it could have been possible for the author
  to have written cleaner code without jeopardizing the quickness of
   implementation that is required for ethical hacking engagements. Why he
    opted for not doing so remains of unknown reason.
+
+## Troubleshooting
+
+Critical bug fixes that had to be made in order to properly implement the
+ source code and avoid fatal errors:
+- **chapter02/bh_sshserver.py** required the RSA key contained in "test_rsa.key
+" file, now included in the corresponding directory.
+- **chapter03/sniffer_ip_header_decode.py** had serious problems in the
+ definition of IP packet sizes and portability between 32/64-bit systems due
+  to problems in the implementation of structs. More about these issues on 
+  [this thread on Stack Overflow.](https://stackoverflow.com/questions/29306747/python-sniffing-from-black-hat-python-book#29307402)
