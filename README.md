@@ -49,7 +49,11 @@ Critical bug fixes that had to be made in order to properly implement the
  source code and avoid fatal errors:
 - **chapter02/bh_sshserver.py** required the RSA key contained in "test_rsa.key
 " file, now included in the corresponding directory.
-- **chapter03/sniffer_ip_header_decode.py** had serious problems in the
- definition of IP packet sizes and portability between 32/64-bit systems due
-  to problems in the implementation of structs. More about these issues on 
-  [this thread on Stack Overflow.](https://stackoverflow.com/questions/29306747/python-sniffing-from-black-hat-python-book#29307402)
+- **chapter03/sniffer_ip_header_decode.py & sniffer_with_icmp.py & scanner.py** all had serious
+ problems in the definition of IP packet sizes and portability between 32/64-bit 
+ systems due to problems in the implementation of structs. More about these 
+ issues on [this thread on Stack Overflow.](https://stackoverflow.com/questions/29306747/python-sniffing-from-black-hat-python-book#29307402)
+- **chapter03/scanner.py** used the netaddr module, which is not
+ maintained anymore and presents many incompatibilities with Python 3. 
+ For that reason the code has been refactored and now uses the ipaddress module 
+ from Stdlib.
