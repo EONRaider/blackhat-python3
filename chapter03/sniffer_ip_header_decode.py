@@ -4,7 +4,7 @@ import struct
 from ctypes import *
 
 # host to listen on
-host = "192.168.0.10"
+host = "192.168.0.187"
 
 
 class IP(Structure):
@@ -26,6 +26,7 @@ class IP(Structure):
         return cls.from_buffer_copy(socket_buffer)
 
     def __init__(self, socket_buffer=None):
+        self.socket_buffer = socket_buffer
 
         # map protocol constants to their names
         self.protocol_map = {1: "ICMP", 6: "TCP", 17: "UDP"}
