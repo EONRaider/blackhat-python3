@@ -58,7 +58,7 @@ def extract_image(headers,http_payload):
 		
 			# if we detect compression decompress the image
 			try:
-				if "Content-Encoding" in headers.keys():
+				if "Content-Encoding" in list(headers.keys()):
 					if headers['Content-Encoding'] == "gzip":
 						image = zlib.decompress(image,16+zlib.MAX_WBITS)
 					elif headers['Content-Encoding'] == "deflate":
@@ -126,5 +126,5 @@ def http_assembler(pcap_file):
 
 carved_images, faces_detected = http_assembler(pcap_file)
 
-print "Extracted: %d images" % carved_images
-print "Detected: %d faces" % faces_detected
+print("Extracted: %d images" % carved_images)
+print("Detected: %d faces" % faces_detected)
