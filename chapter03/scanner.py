@@ -9,10 +9,10 @@ from ctypes import *
 host = "192.168.0.187"
 
 # subnet to target
-subnet = "192.168.0.0/24"
+tgt_subnet = "192.168.0.0/24"
 
 # magic we'll check ICMP responses for
-magicmessage = "PYTHONRULES!"
+tgt_message = "PYTHONRULES!"
 
 
 def udp_sender(sub_net, magic_message):
@@ -92,7 +92,7 @@ if os.name == "nt":
     sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
 # start sending packets
-t = threading.Thread(target=udp_sender, args=(subnet, magicmessage))
+t = threading.Thread(target=udp_sender, args=(tgt_subnet, tgt_message))
 t.start()
 
 try:
@@ -131,12 +131,12 @@ try:
 
                 # check to make sure we are receiving the response 
                 # that lands in our subnet
-                if ip_address(ip_header.src_address) in ip_network(subnet):
+                if ip_address(ip_header.src_address) in ip_network(tgt_subnet):
 
                     # test for our magic message
                     if raw_buffer[
                        len(raw_buffer) -
-                       len(magicmessage):] == magicmessage:
+                       len(tgt_message):] == tgt_message:
                         print("Host Up: %s" % ip_header.src_address)
 
 # handle CTRL-C
