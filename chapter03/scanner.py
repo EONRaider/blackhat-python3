@@ -134,9 +134,8 @@ try:
                 if ip_address(ip_header.src_address) in ip_network(tgt_subnet):
 
                     # test for our magic message
-                    if raw_buffer[
-                       len(raw_buffer) -
-                       len(tgt_message):] == tgt_message:
+                    if raw_buffer[len(raw_buffer)
+                       - len(tgt_message):] == tgt_message:
                         print("Host Up: %s" % ip_header.src_address)
 
 # handle CTRL-C
