@@ -106,16 +106,15 @@ try:
                     filter=bpf_filter,
                     iface=interface
                     )
+    # write out the captured packets
+    print("[*] Writing packets to arper.pcap")
+    wrpcap('arper.pcap', packets)
 
 except KeyboardInterrupt:
     pass
 
 finally:
-    # write out the captured packets
-    print("[*] Writing packets to arper.pcap")
-    wrpcap('arper.pcap', packets)
     poisoning = False
-
     # wait for poisoning thread to exit
     time.sleep(2)
 
