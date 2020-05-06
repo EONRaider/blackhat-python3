@@ -64,3 +64,7 @@ now included in the corresponding directory.
 "cv2". The "cv2.cv" module has been deprecated and replaced. The attribute
 "cv2.cv.CV_HAAR_SCALE_IMAGE" from the original code was replaced by 
 "cv2.CASCADE_SCALE_IMAGE" because of [this commit](https://github.com/ragulin/face-recognition-server/commit/7b9773be352cbcd8a3aff50c7371f8aaf737bc5c).
+- **chapter05/content_bruter.py** required a wordlist to work. It has been added
+to the chapter under "all.txt".
+- **chapter05/joomla_killer.py** required a wordlist to work. It has been added
+to the chapter under "cain.txt".
