@@ -61,10 +61,16 @@ now included in the corresponding directory.
  not compatible with Python 3. For that reason the code has been refactored and 
  now uses the *kamene* module.
 - **chapter04/pic_carver.py** now uses the "opencv-python" library instead of
-"cv2". The "cv2.cv" module has been deprecated and replaced. The attribute
+"cv2". The "cv2.cv" module was deprecated and has been replaced. The parameter
 "cv2.cv.CV_HAAR_SCALE_IMAGE" from the original code was replaced by 
 "cv2.CASCADE_SCALE_IMAGE" because of [this commit](https://github.com/ragulin/face-recognition-server/commit/7b9773be352cbcd8a3aff50c7371f8aaf737bc5c).
 - **chapter05/content_bruter.py** required a wordlist to work. It has been added
 to the chapter under "all.txt".
 - **chapter05/joomla_killer.py** required a wordlist to work. It has been added
 to the chapter under "cain.txt".
+- **chapter06/bhp_bing.py & bhp_fuzzer.py & bhp_wordlist.py** have been
+ reformatted to comply with PEP8, though some warnings will still be
+  triggered due to the necessity to conform class names to camel-casing in
+   this specific application on Burp Suite.
+- **chapter06/jython-standalone-2.7.2.jar** is available as a more updated
+ version of the file relative to the one presented in the book.
