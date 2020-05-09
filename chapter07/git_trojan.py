@@ -57,7 +57,7 @@ def connect_to_github():
 
 def get_file_contents(filepath):
     gh, repo, branch = connect_to_github()
-    tree = branch.commit.commit.tree.recurse()
+    tree = branch.commit.commit.tree.to_tree().recurse()
     for filename in tree.tree:
         if filepath in filename.path:
             print("[*] Found file %s" % filepath)
