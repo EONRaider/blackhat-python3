@@ -80,3 +80,6 @@ to the chapter under "cain.txt".
    "trojan_config" variable now contains the relative path to the "config" subdirectory.
    The code includes instructions as comments on how to generate an access token
    instead of using one's password in case 2FA is being used.
+- **chapter08/keylogger.py** requires the PyHook module to work. A wheel file
+ has been included with the 1.6.2 version. If necessary, other versions can
+  be downloaded from [here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyhook).
