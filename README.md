@@ -74,3 +74,9 @@ to the chapter under "cain.txt".
    this specific application on Burp Suite.
 - **chapter06/jython-standalone-2.7.2.jar** is available as a more updated
  version of the file relative to the one presented in the book.
+- **chapter07/git_trojan.py** was refactored to replace the "imp" module (now
+ deprecated) for "types". A subdirectory structure with the necessary
+  configuration files has been implemented as instructed in the book. The
+   "trojan_config" variable now contains the relative path to the "config" subdirectory.
+   The code includes instructions as comments on how to generate an access token
+   instead of using one's password in case 2FA is being used.
