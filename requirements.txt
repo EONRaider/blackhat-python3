@@ -8,3 +8,4 @@ six==1.14.0
 kamene~=0.32
 opencv-python~=4.2.0.34
 github3.py~=1.3.0
+crypto~=1.4.1
