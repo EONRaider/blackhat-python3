@@ -1,7 +1,7 @@
 from immlib import *
 
 
-class cc_hook(LogBpHook):
+class CcHook(LogBpHook):
 
     def __init__(self):
         LogBpHook.__init__(self)
@@ -21,7 +21,7 @@ def main(args):
 
     functions = imm.getAllFunctions(calc.getCodebase())
 
-    hooker = cc_hook()
+    hooker = CcHook()
 
     for function in functions:
         hooker.add("%08x" % function, function)
