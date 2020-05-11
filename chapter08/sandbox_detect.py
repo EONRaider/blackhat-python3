@@ -12,9 +12,7 @@ double_clicks = 0
 
 
 class LASTINPUTINFO(ctypes.Structure):
-    _fields_ = [("cbSize", ctypes.c_uint),
-                ("dwTime", ctypes.c_ulong)
-                ]
+    _fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_ulong)]
 
 
 def get_last_input():
@@ -94,9 +92,10 @@ def detect_sandbox():
                             sys.exit(0)
 
             # we are happy there's enough user input
-            if keystrokes >= max_keystrokes and double_clicks >= max_double_clicks and mouse_clicks >= max_mouse_clicks:
+            if keystrokes >= max_keystrokes \
+                    and double_clicks >= max_double_clicks \
+                    and mouse_clicks >= max_mouse_clicks:
                 return
-
             previous_timestamp = keypress_time
 
         elif keypress_time is not None:

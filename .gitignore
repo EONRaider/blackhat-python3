@@ -63,6 +63,3 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
-
-# Project Specific
-Chapter_07/trojan/github_login.py
