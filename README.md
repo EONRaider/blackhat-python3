@@ -5,7 +5,7 @@ Source code for the book "Black Hat Python" by Justin Seitz. The code has been f
 Although many optimizations could have been implemented in the source code
  presented
 throughout the book, the code was left unaltered as much as possible so that
-such implementations can be applied by the reader as he sees fit. The code as
+such modifications can be applied by the reader as he sees fit. The code as
 it is needs some serious refactoring efforts ranging from docstrings to type
 hinting and exception handling, not to mention enhancements like context
  managers, but these issues by themselves may come to benefit the reader if 
@@ -28,6 +28,8 @@ user@host:~/DIR$ source venv/bin/activate
 ```
 
 ## Notes
+- The book was made available in its entirety by Internet Archive, right
+ [here](https://archive.org/details/pdfy-rJnW-pPgiHK61dok/).
 - Some listings presented on the book were missing from the author's code
  repository available from "no starch press" website and were
 added to their respective chapters. A more accurate naming convention has
