@@ -15,8 +15,8 @@ hinting and exception handling, not to mention enhancements like context
 
 ## Usage
 Simply make a new directory (DIR) for the project, create a new
- virtual environment or "venv" for it (recommended), clone this repository
-  using *git clone* and install the requirements using *pip install*.
+ virtual environment or `venv` for it (recommended), clone this repository
+  using `git clone` and install the requirements using `pip install`.
 
 ```
 user@host:~$ mkdir DIR
@@ -65,9 +65,9 @@ Critical bug fixes that had to be made in order to properly implement the
 "cv2.cv.CV_HAAR_SCALE_IMAGE" from the original code was replaced by 
 "cv2.CASCADE_SCALE_IMAGE" because of [this commit](https://github.com/ragulin/face-recognition-server/commit/7b9773be352cbcd8a3aff50c7371f8aaf737bc5c).
 - `chapter05/content_bruter.py` required a wordlist to work. It has been added
-to the chapter under "all.txt".
+to the chapter under `all.txt`
 - `chapter05/joomla_killer.py` required a wordlist to work. It has been added
-to the chapter under "cain.txt".
+to the chapter under `cain.txt`
 - `chapter06/bhp_bing.py` & `bhp_fuzzer.py` & `bhp_wordlist.py` have been
  reformatted to comply with PEP8, though some warnings will still be
   triggered due to the necessity to conform class names to camel-casing in
