@@ -84,3 +84,19 @@ to the chapter under `cain.txt`
 - `chapter08/keylogger.py` requires the PyHook module to work. A wheel file
  has been included with the 1.6.2 version. If necessary, other versions can
   be downloaded from [here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyhook).
+
+## Contributing
+
+As a matter of common sense, first try to discuss the change you wish to make to
+this repository via an issue.
+
+1. Ensure the modifications you wish to introduce actually lead to a pull
+request. The change of one line or two should be requested through an issue
+ instead.
+2. If necessary, update the README.md file with details relative to changes to
+ the project structure.
+3. Make sure the commit messages that include the modifications follow a
+ standard. If you don't know how to proceed, [HERE](https://chris.beams.io/posts/git-commit/)
+  is a great reference on how to do it.
+4. Your request will be reviewed as soon as possible (usually within one day).
+
