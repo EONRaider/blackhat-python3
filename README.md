@@ -14,16 +14,14 @@ hinting and exception handling, not to mention enhancements like context
  to be avoided during runtime.
 
 ## Usage
-Simply make a new directory (DIR) for the project, create a new
- virtual environment or `venv` for it (recommended), clone this repository
-  using `git clone` and install the requirements using `pip install`.
+Simply choose a directory (DIR) in which to clone the project using
+`git clone`, create a new virtual environment or `venv` for it (recommended
+) and install the requirements using `pip install`.
 
 ```
-user@host:~$ mkdir DIR
-user@host:~$ cd DIR
+user@host:~/DIR$ git clone https://github.com/EONRaider/blackhat-python3
 user@host:~/DIR$ python3 -m venv venv
 user@host:~/DIR$ source venv/bin/activate
-(venv) user@host:~/DIR$ git clone https://github.com/EONRaider/blackhat-python3
 (venv) user@host:~/DIR$ pip install -r requirements.txt
 ```
 
@@ -98,5 +96,5 @@ request. The change of one line or two should be requested through an issue
 3. Make sure the commit messages that include the modifications follow a
  standard. If you don't know how to proceed, [HERE](https://chris.beams.io/posts/git-commit/)
   is a great reference on how to do it.
-4. Your request will be reviewed as soon as possible (usually within one day).
+4. Your request will be reviewed as soon as possible (usually within 48 hours).
 
