@@ -4,6 +4,7 @@ import fnmatch
 import time
 import random
 import zlib
+import base64
 
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
@@ -31,24 +32,26 @@ def wait_for_browser(browser):
 
 
 def encrypt_string(plaintext):
-    chunk_size = 256
+    chunk_size = 208
+    if isinstance(plaintext, (str)):
+        plaintext = plaintext.encode()
     print("Compressing: %d bytes" % len(plaintext))
     plaintext = zlib.compress(plaintext)
     print("Encrypting %d bytes" % len(plaintext))
 
     rsakey = RSA.importKey(public_key)
     rsakey = PKCS1_OAEP.new(rsakey)
-    encrypted = ""
+    encrypted = b""
     offset = 0
 
     while offset < len(plaintext):
-        chunk = plaintext[offset:offset + 256]
+        chunk = plaintext[offset:offset + chunk_size]
         if len(chunk) % chunk_size != 0:
-            chunk += " " * (chunk_size - len(chunk))
+            chunk += b" " * (chunk_size - len(chunk))
         encrypted += rsakey.encrypt(chunk)
         offset += chunk_size
 
-    encrypted = encrypted.encode("base64")
+    encrypted = base64.b64encode(encrypted)
     print("Base64 encoded crypto: %d" % len(encrypted))
     return encrypted
 
