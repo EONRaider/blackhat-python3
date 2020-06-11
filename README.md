@@ -12,6 +12,11 @@ hinting and exception handling, not to mention enhancements like context
  he has the intention of implementing them. It also presents many bugs
  originating from indentation that have been corrected if fatal errors were 
  to be avoided during runtime.
+ 
+*A conversion similar to this one has been made available by myself on the
+ source code of the book "Violent Python", by TJ O'Connor. Check it out
+  [here](https://github.com/EONRaider/violent-python3) if you haven't done it
+   yet.*
 
 ## Usage
 Simply choose a directory (DIR) in which to clone the project using
