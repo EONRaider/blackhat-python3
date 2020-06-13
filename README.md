@@ -1,6 +1,7 @@
 # Python 3 "Black Hat Python" Source Code
 
-Source code for the book "Black Hat Python" by Justin Seitz. The code has been fully converted to Python 3, reformatted to comply with PEP8 standards and refactored to eliminate issues of dependency resolution involving deprecated libraries.
+Source code for the book "Black Hat Python" by Justin Seitz. The code has been
+ fully converted to Python 3, reformatted to comply with PEP8 standards and refactored to eliminate dependency issues involving the implementation of deprecated libraries.
 
 Although many optimizations could have been implemented in the source code
  presented
