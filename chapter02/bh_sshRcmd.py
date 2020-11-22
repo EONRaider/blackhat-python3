@@ -17,7 +17,7 @@ def ssh_command(ip, user, passwd, command):
             # get the command from the SSH server
             command = ssh_session.recv(1024)
             try:
-                cmd_output = subprocess.check_output(command, shell=True)
+                cmd_output = subprocess.check_output(command.decode(), shell=True)
                 ssh_session.send(cmd_output)
             except Exception as e:
                 ssh_session.send(str(e))
