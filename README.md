@@ -32,8 +32,6 @@ user@host:~/DIR$ source venv/bin/activate
 ```
 
 ## Notes
-- The book was made available in its entirety by Internet Archive, right
- [here](https://archive.org/details/pdfy-rJnW-pPgiHK61dok/).
 - Some listings presented on the book were missing from the author's code
  repository available from "no starch press" website and were
 added to their respective chapters. A more accurate naming convention has
