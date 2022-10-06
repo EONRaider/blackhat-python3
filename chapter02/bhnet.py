@@ -84,7 +84,7 @@ def client_handler(client_socket):
                 cmd_buffer += client_socket.recv(1024)
 
             # we have a valid command so execute it and send back the results
-            response = run_command(cmd_buffer)
+            response = run_command(cmd_buffer.decode())
 
             # send back the response
             client_socket.send(response)
