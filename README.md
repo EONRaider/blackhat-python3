@@ -1,6 +1,8 @@
 # Python 3 "Black Hat Python" Kaynak Kodu
 
-Justin Seitz'in "Black Hat Python" kitabındaki kaynak kodlar. Kodlar tamamen Python 3'e dönüştürüldü, PEP8 standartlarına uyacak şekilde yeniden biçimlendirildi ve kullanımdan kalkan kütüphanelerden kaynaklanan sorunların ortadan kaldırılması için yeniden düzenlendi. [EONRaider](https://github.com/EONRaider/blackhat-python3) tarafından GitHub'a eklenen bu proje, [Bedirhan Budak](https://github.com/bedirhanbudak) tarafından Türkçe'ye çevrildi.
+Justin Seitz'in "Black Hat Python" kitabındaki kaynak kodlar. Kodlar tamamen Python 3'e dönüştürüldü, PEP8 standartlarına uyacak şekilde yeniden biçimlendirildi ve kullanımdan kalkan kütüphanelerden kaynaklanan sorunların ortadan kaldırılması için yeniden düzenlendi.
+
+[EONRaider](https://github.com/EONRaider/blackhat-python3) tarafından GitHub'a eklenen bu proje, [Bedirhan Budak](https://github.com/bedirhanbudak) tarafından Türkçe'ye çevrilmiştir.
 
 Kitap boyunca sunulan kaynak kodlarında pek çok iyileştirme yapılabilecek olsa da, okuyucuların kitapta gördüğü şekilde uygulayabilmesi için, kodlar mümkün olduğunca değiştirilmeden bırakılmıştır. Kodlar, bu haliyle bile "docstring"lerden "type hinting" ve "exeption handling"e kadar bazı ciddi düzenlemelere ihtiyaç duyuyor ki içerik yöneticileri gibi geliştirmelerden bahsetmiyorum bile. Ancak bu sorunlar, okuyucu bunları uygulamaya niyetliyse kendi başlarına fayda sağlayabilir. Ayrıca, programın çalışması sırasında ortaya çıkan önemli hatalar engellenmek isteniyorsa, düzeltilmiş olan girintilerden kaynaklanan birçok hatayı da gösteriyor.
  
