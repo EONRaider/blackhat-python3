@@ -94,7 +94,7 @@ to the chapter under `cain.txt`
 
 ## Translations
 Contributions in other languages can be checked here:
-- [Turkish](https://github.com/EONRaider/blackhat-python3/tree/turkish-language) by [Bedirhan Budak](https://github.com/bedirhanbudak)
+- Translated to [Turkish](https://github.com/EONRaider/blackhat-python3/tree/turkish-language) by [Bedirhan Budak](https://github.com/bedirhanbudak)
 
 ## Contributing
 
