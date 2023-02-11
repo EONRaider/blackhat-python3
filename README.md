@@ -92,6 +92,10 @@ to the chapter under `cain.txt`
   corrected. *Contribution from [Enraged](https://github.com/Enraged) at 
   [this commit](https://github.com/EONRaider/blackhat-python3/pull/2/commits/fcab6afc19fc4ea01b8c5c475e7b8c5e4b158df6).*
 
+## Translations
+Contributions in other languages can be checked here:
+- [Turkish](https://github.com/EONRaider/blackhat-python3/tree/turkish-language) by [Bedirhan Budak](https://github.com/bedirhanbudak)
+
 ## Contributing
 
 As a matter of common sense, first try to discuss the change you wish to make to
