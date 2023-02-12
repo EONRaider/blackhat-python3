@@ -42,13 +42,13 @@ class BHPFuzzer(IIntruderPayloadGenerator):
 
     def getNextPayload(self, current_payload):
 
-        # convert into a string
+        # string'e dönüştürmek
         payload = "".join(chr(x) for x in current_payload)
 
-        # call our simple mutator to fuzz the POST
+        # POST'u belirsizleştirmek için mutate fonksiyonunu çağırın
         payload = self.mutate_payload(payload)
 
-        # increase the number of fuzzing attempts
+        # belirsizleştirme girişimlerinin sayısını artırın
         self.num_payloads += 1
         return payload
 
@@ -58,23 +58,24 @@ class BHPFuzzer(IIntruderPayloadGenerator):
 
     @staticmethod
     def mutate_payload(original_payload):
-        # pick a simple mutator or even call an external script
-        # like Radamsa does
+        # basit bir mutate fonksiyonu seçin veya
+        # Radamsa'nın yaptığı gibi harici bir komut dosyası çağırın
         picker = random.randint(1, 3)
 
-        # select a random offset in the payload to mutate
+        # mutasyona uğratmak için payload'da rastgele bir offset seçin
         offset = random.randint(0, len(original_payload) - 1)
         payload = original_payload[:offset]
 
-        # random offset insert a SQL injection attempt
+        # rastgele offset bir SQL enjeksiyon denemesi ekler
         if picker == 1:
             payload += "'"
 
-            # jam an XSS attempt in
+            # bir XSS denemesini dene
         if picker == 2:
             payload += "<script>alert('BHP!');</script>"
 
-            # repeat a chunk of the original payload a random number
+            # orijinal payload'ın bir parçasını
+            # rastgele bir sayı olarak tekrarla
         if picker == 3:
             chunk_length = random.randint(len(payload[offset:]),
                                           len(payload) - 1)
@@ -82,6 +83,6 @@ class BHPFuzzer(IIntruderPayloadGenerator):
             for i in range(repeater):
                 payload += original_payload[offset:offset + chunk_length]
 
-        # add the remaining bits of the payload
+        # payload'ın kalan bitlerini ekleyin
         payload += original_payload[offset:]
         return payload

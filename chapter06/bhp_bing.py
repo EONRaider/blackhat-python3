@@ -21,7 +21,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
         self._helpers = callbacks.getHelpers()
         self.context = None
 
-        # we set up our extension
+        # uzantımızı ayarlıyoruz
         callbacks.setExtensionName("BHP Bing")
         callbacks.registerContextMenuFactory(self)
         return
@@ -33,7 +33,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
         return menu_list
 
     def bing_menu(self, event):
-        # grab the details of what the user clicked
+        # kullanıcının tıkladığı şeyin ayrıntılarını alın
         http_traffic = self.context.getSelectedMessages()
         print("%d requests highlighted" % len(http_traffic))
 
@@ -46,7 +46,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
 
     def bing_search(self, host):
 
-        # check if we have an IP or hostname
+        # IP veya hostname olup olmadığını kontrol edin
         is_ip = re.match(r'[0-9]+(?:\.[0-9]+){3}', host)
 
         if is_ip:
@@ -67,7 +67,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
 
         print("Performing Bing search: %s" % bing_query_string)
 
-        # encode our query
+        # sorgumuzu encode etmek
         quoted_query = urllib.parse.quote(bing_query_string)
 
         http_request = "GET https://api.datamarket.azure.com/Bing/Search/Web?$format=json&$top=20&Query=%s HTTP/1.1\r\n" % quoted_query

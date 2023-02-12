@@ -4,7 +4,7 @@ import getopt
 import threading
 import subprocess
 
-# define some global variables
+# bazı global değişkenlerin tanımları
 listen = False
 command = False
 upload = False
@@ -14,35 +14,35 @@ upload_destination = ""
 port = 0
 
 
-# this runs a command and returns the output
+# bir komut çalıştırır ve çıktıyı döndürür
 def run_command(cmd):
-    # trim the newline
+    # yeni satırı kırp
     cmd = cmd.rstrip()
 
-    # run the command and get the output back
+    # komutu çalıştır ve çıktıyı geri al
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT,
                                          shell=True)
     except subprocess.CalledProcessError as e:
         output = e.output
 
-    # send the output back to the client
+    # çıktıyı client'a geri gönder
     return output
 
 
-# this handles incoming client connections
+# gelen istemci bağlantılarını yönet
 def client_handler(client_socket):
     global upload
     global execute
     global command
 
-    # check for upload
+    # upload kontrolü
     if len(upload_destination):
 
-        # read in all of the bytes and write to our destination
+        # tüm bytle'ları oku ve hedefe yaz
         file_buffer = ""
 
-        # keep reading data until none is available
+        # hepsi bitene kadar verileri okumaya devam edin
         while True:
             data = client_socket.recv(1024)
 
@@ -51,51 +51,51 @@ def client_handler(client_socket):
             else:
                 file_buffer += data
 
-        # now we take these bytes and try to write them out
+        # şimdi bu bytle'ları alıp yazmaya çalışıyoruz
         try:
             file_descriptor = open(upload_destination, "wb")
             file_descriptor.write(file_buffer.encode('utf-8'))
             file_descriptor.close()
 
-            # acknowledge that we wrote the file out
+            # dosyayı yazdığımızı bilgilendir
             client_socket.send(
                 "Successfully saved file to %s\r\n" % upload_destination)
         except OSError:
             client_socket.send(
                 "Failed to save file to %s\r\n" % upload_destination)
 
-    # check for command execution
+    # komut yürütmeyi kontrol et
     if len(execute):
-        # run the command
+        # komutu çalıştır
         output = run_command(execute)
 
         client_socket.send(output)
 
-    # now we go into another loop if a command shell was requested
+    # şimdi bir shell komutu istendiyse başka bir döngüye geçiyoruz
     if command:
 
         while True:
-            # show a simple prompt
+            # basit bir prompt göster
             client_socket.send("<BHP:#> ".encode('utf-8'))
 
-            # now we receive until we see a linefeed (enter key)
+            # şimdi geri bildirim görene kadar alıyoruz (anahtarı girin)
             cmd_buffer = b''
             while b"\n" not in cmd_buffer:
                 cmd_buffer += client_socket.recv(1024)
 
-            # we have a valid command so execute it and send back the results
+            # geçerli bir komutumuz var, bu yüzden yürüt ve sonuçları geri gönder
             response = run_command(cmd_buffer.decode())
 
-            # send back the response
+            # yanıtı geri gönder
             client_socket.send(response)
 
 
-# this is for incoming connections
+# bu kısım, gelen bağlantılar içindir
 def server_loop():
     global target
     global port
 
-    # if no target is defined we listen on all interfaces
+    # herhangi bir hedef tanımlanmamışsa tüm arayüzleri dinleriz
     if not len(target):
         target = "0.0.0.0"
 
@@ -106,27 +106,27 @@ def server_loop():
     while True:
         client_socket, addr = server.accept()
 
-        # spin off a thread to handle our new client
+        # yeni client'larla ilgilenmek için bir thread döndürün
         client_thread = threading.Thread(target=client_handler,
                                          args=(client_socket,))
         client_thread.start()
 
 
-# if we don't listen we are a client... make it so.
+# dinlemezsek biz client'ız... öyle olsun.
 def client_sender(buffer):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        # connect to our target host
+        # hedef sunucumuza bağlanın
         client.connect((target, port))
 
-        # if we detect input from stdin send it
-        # if not we are going to wait for the user to punch some in
+        # stdin'den input tespit edersek onu gönder
+        # değilse, kullanıcının bazılarını içeri sokmasını bekleyeceğiz
         if len(buffer):
             client.send(buffer.encode('utf-8'))
 
         while True:
-            # now wait for data back
+            # verilerin geri gelmesini bekleyin
             recv_len = 1
             response = b''
 
@@ -140,19 +140,19 @@ def client_sender(buffer):
 
             print(response.decode('utf-8'), end=' ')
 
-            # wait for more input
+            # daha fazla giriş için bekleyin
             buffer = input("")
             buffer += "\n"
 
-            # send it off
+            # gönder gitsin
             client.send(buffer.encode('utf-8'))
 
     except socket.error as exc:
-        # just catch generic errors - you can do your homework to beef this up
+        # sadece genel hataları yakalayın - bunu güçlendirmek için çalışıp öğrenebilirsiniz
         print("[*] Exception! Exiting.")
         print(f"[*] Caught exception socket.error: {exc}")
 
-        # teardown the connection
+        # bağlantıyı sonlandır
         client.close()
 
 
@@ -191,7 +191,7 @@ def main():
     if not len(sys.argv[1:]):
         usage()
 
-    # read the commandline options
+    # komut satırı seçeneklerini oku
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hle:t:p:cu:",
                                    ["help", "listen", "execute", "target",
@@ -218,19 +218,18 @@ def main():
         print(str(err))
         usage()
 
-    # are we going to listen or just send data from STDIN?
+    # dinleyecek miyiz yoksa sadece STDIN'den veri mi göndereceğiz?
     if not listen and len(target) and port > 0:
-        # read in the buffer from the commandline
-        # this will block, so send CTRL-D if not sending input
-        # to stdin
+        # buffer'ı komut satırından okunmasını bu engelleyecektir,
+        # bu nedenle stdin'e input göndermiyorsa CTRL-D yapın
         buffer = sys.stdin.read()
 
-        # send data off
+        # veri gönder
         client_sender(buffer)
 
-    # we are going to listen and potentially
-    # upload things, execute commands and drop a shell back
-    # depending on our command line options above
+    # yukarıdaki komut satırı seçeneklerimize bağlı olarak dinleyeceğiz ve
+    # potansiyel olarak bir şeyler yükleyeceğiz,
+    # komutları yürüteceğiz ve geriye bir shell bırakacağız
     if listen:
         server_loop()
 

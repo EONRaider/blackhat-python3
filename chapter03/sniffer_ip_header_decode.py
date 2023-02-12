@@ -3,7 +3,7 @@ import os
 import struct
 from ctypes import *
 
-# host to listen on
+# host için dinleme adresi
 host = "192.168.0.187"
 
 
@@ -28,21 +28,21 @@ class IP(Structure):
     def __init__(self, socket_buffer=None):
         self.socket_buffer = socket_buffer
 
-        # map protocol constants to their names
+        # protokol sabitlerini adlarıyla eşleştirir
         self.protocol_map = {1: "ICMP", 6: "TCP", 17: "UDP"}
 
-        # human readable IP addresses
+        # insan tarafından okunabilen IP adresleri
         self.src_address = socket.inet_ntoa(struct.pack("@I", self.src))
         self.dst_address = socket.inet_ntoa(struct.pack("@I", self.dst))
 
-        # human readable protocol
+        # insan tarafından okunabilen protokol
         try:
             self.protocol = self.protocol_map[self.protocol_num]
         except IndexError:
             self.protocol = str(self.protocol_num)
 
 
-# create a raw socket and bind it to the public interface
+# ham bir soket oluşturun ve onu ortak arayüze bağlayın
 if os.name == "nt":
     socket_protocol = socket.IPPROTO_IP
 else:
@@ -52,20 +52,20 @@ sniffer = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket_protocol)
 
 sniffer.bind((host, 0))
 
-# we want the IP headers included in the capture
+# yakalamaya dahil edilen IP başlıklarını istiyoruz
 sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
-# if we're on Windows we need to send some ioctl
-# to setup promiscuous mode
+# Windows kullanıyorsak promiscuous modunu kurmak için
+# biraz ioctl göndermemiz gerekir
 if os.name == "nt":
     sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
 try:
     while True:
-        # read in a single packet
+        # tek bir pakette okumak
         raw_buffer = sniffer.recvfrom(65535)[0]
 
-        # create an IP header from the first 20 bytes of the buffer
+        # buffer'ın ilk 20 byte'ından bir IP başlığı oluşturun
         ip_header = IP(raw_buffer[:20])
 
         print("Protocol: %s %s -> %s" % (
@@ -75,6 +75,6 @@ try:
               )
 
 except KeyboardInterrupt:
-    # if we're on Windows turn off promiscuous mode
+    # Windows'taysak promiscuous modunu kapat
     if os.name == "nt":
         sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
