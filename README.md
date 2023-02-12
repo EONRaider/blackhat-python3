@@ -39,7 +39,7 @@ Kaynak kodunu düzgün bir şekilde çalıştırmak ve önemli hatalardan korunm
 
 ## Çeviriler
 Diğer dillere yapılan çevirileri buradan kontrol edebilirsiniz:
-- [Bedirhan Budak](https://github.com/bedirhanbudak) tarafından [Turkish](https://github.com/EONRaider/blackhat-python3/tree/turkish-language) diline çevrilmiştir.
+- [Bedirhan Budak](https://github.com/bedirhanbudak) tarafından [Türkçe](https://github.com/EONRaider/blackhat-python3/tree/turkish-language) diline çevrilmiştir.
 
 ## Katkıda Bulunmak İsteyenler
 Sağduyulu olmak için, önce bu repository'de yapmak istediğiniz değişikliği bir "issue" aracılığıyla tartışmaya çalışın.
