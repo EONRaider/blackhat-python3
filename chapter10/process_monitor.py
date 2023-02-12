@@ -9,23 +9,24 @@ LOG_FILE = "process_monitor_log.csv"
 
 def get_process_privileges(pid):
     try:
-        # obtain a handle to the target process
+        # hedef süreç için bir handle elde etmek
         hproc = win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION,
                                      False,
                                      pid)
 
-        # open the main process token
+        # ana işlem token'ını aç
         htok = win32security.OpenProcessToken(hproc, win32con.TOKEN_QUERY)
 
-        # retrieve the list of privileges enabled
+        # etkinleştirilen ayrıcalıkların listesini al
         privs = win32security.GetTokenInformation(
             htok,
             win32security.TokenPrivileges)
 
-        # iterate over privileges and output the ones that are enabled
+        # ayrıcalıklar üzerinde döngü oluşturun
+        # ve etkinleştirilenlerin çıktısını alın
         priv_list = []
         for priv_id, priv_flags in privs:
-            # check if the privilege is enabled
+            # ayrıcalığın etkin olup olmadığını kontrol edin
             if priv_flags == 3:
                 priv_list.append(
                     win32security.LookupPrivilegeName(None, priv_id))
@@ -43,14 +44,14 @@ def log_to_file(message):
     return
 
 
-# create a log file header
+# bir log dosyası başlığı oluştur
 if not os.path.isfile(LOG_FILE):
     log_to_file("Time,User,Executable,CommandLine,PID,ParentPID,Privileges")
 
-# instantiate the WMI interface
+# WMI arayüzünü başlat
 c = wmi.WMI()
 
-# create our process monitor
+# process monitor oluştur
 process_watcher = c.Win32_Process.watch_for("creation")
 
 while True:

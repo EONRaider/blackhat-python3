@@ -3,7 +3,7 @@ import paramiko
 import threading
 import sys
 
-# using the server host key from the paramiko demo files
+# paramiko demo dosyalarından server host key kullanma
 host_key = paramiko.RSAKey(filename='test_rsa.key')
 
 
@@ -39,7 +39,7 @@ except Exception as e:
 print("[+] Got a connection!")
 
 try:
-    # noinspection PyTypeChecker
+    # "noinspection PyTypeChecker" hatası
     bhSession = paramiko.Transport(client)
     bhSession.add_server_key(host_key)
     server = Server()

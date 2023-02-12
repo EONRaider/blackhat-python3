@@ -1,7 +1,7 @@
 from kamene.all import *
 
 
-# our packet callback
+# paket geri aramamız
 def packet_callback(packet):
     if packet[TCP].payload:
         mail_packet = bytes(packet[TCP].payload)
@@ -10,7 +10,7 @@ def packet_callback(packet):
             print("[*] %s" % packet[TCP].payload)
 
 
-# fire up our sniffer
+# sniffer'ımızı ateşle
 sniff(filter="tcp port 110 or tcp port 25 or tcp port 143",
       prn=packet_callback,
       store=0)

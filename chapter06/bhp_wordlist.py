@@ -33,10 +33,10 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
         self.context = None
         self.hosts = set()
 
-        # start with something we know is common
+        # yaygın olduğunu bildiğimiz bir şeyle başlayalım
         self.wordlist = {"password"}
 
-        # we set up our extension
+        # uzantımızı kuruyoruz
         callbacks.setExtensionName("BHP Wordlist")
         callbacks.registerContextMenuFactory(self)
         return
@@ -49,7 +49,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
         return menu_list
 
     def wordlist_menu(self, event):
-        # grab the details of what the user clicked
+        # kullanıcının tıkladığı şeyin ayrıntılarını alın
         http_traffic = self.context.getSelectedMessages()
 
         for traffic in http_traffic:
@@ -65,7 +65,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
     def get_words(self, http_response):
         headers, body = http_response.tostring().split('\r\n\r\n', 1)
 
-        # skip non-text responses
+        # metin olmayan yanıtları atla
         if headers.lower().find("content-type: text") == -1:
             return
 
@@ -74,7 +74,7 @@ class BurpExtender(IBurpExtender, IContextMenuFactory):
         words = re.findall(r'[a-zA-Z]\w{2,}', page_text)
 
         for word in words:
-            # filter out long strings
+            # uzun string'leri filtrele
             if len(word) <= 12:
                 self.wordlist.add(word.lower())
         return

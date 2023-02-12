@@ -44,7 +44,7 @@ while offset < len(encrypted):
     decrypted += rsakey.decrypt(encrypted[offset:offset + 256])
     offset += 256
 
-# now we decompress to original
+# şimdi orijinal haline sıkıştırıyoruz
 plaintext = zlib.decompress(decrypted)
 
 print(plaintext)

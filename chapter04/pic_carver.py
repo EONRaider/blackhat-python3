@@ -16,7 +16,7 @@ def face_detect(path, file_name):
         return False
     rects[:, 2:] += rects[:, :2]
 
-    # highlight the faces in the image
+    # görüntüdeki yüzleri vurgulayın
     for x1, y1, x2, y2 in rects:
         cv2.rectangle(img, (x1, y1), (x2, y2), (127, 255, 0), 2)
     cv2.imwrite("%s/%s-%s" % (faces_directory, pcap_file, file_name), img)
@@ -25,9 +25,9 @@ def face_detect(path, file_name):
 
 def get_http_headers(http_payload):
     try:
-        # split the headers off if it is HTTP traffic
+        # HTTP trafiği ise başlıkları ayırın
         headers_raw = http_payload[:http_payload.index("\r\n\r\n") + 2]
-        # break out the headers
+        # başlıkları ayırmak
         headers = dict(
             re.findall(r"(?P<name>.*?): (?P<value>.*?)\r\n", headers_raw))
     except:
@@ -43,10 +43,10 @@ def extract_image(headers, http_payload):
 
     try:
         if "image" in headers['Content-Type']:
-            # grab the image type and image body
+            # resim tipini ve resim gövdesini al
             image_type = headers['Content-Type'].split("/")[1]
             image = http_payload[http_payload.index("\r\n\r\n") + 4:]
-            # if we detect compression decompress the image
+            # sıkıştırma tespit edersek görüntünün sıkıştırmasını açın
             try:
                 if "Content-Encoding" in list(headers.keys()):
                     if headers['Content-Encoding'] == "gzip":
@@ -72,7 +72,7 @@ def http_assembler(pcap_fl):
         for packet in sessions[session]:
             try:
                 if packet[TCP].dport == 80 or packet[TCP].sport == 80:
-                    # reassemble the stream into a single buffer
+                    # akışı tek bir buffer'da yeniden birleştirin
                     http_payload += str(packet[TCP].payload)
             except:
                 pass
@@ -84,14 +84,14 @@ def http_assembler(pcap_fl):
         image, image_type = extract_image(headers, http_payload)
 
         if image is not None and image_type is not None:
-            # store the image
+            # resmi sakla
             file_name = "%s-pic_carver_%d.%s" % (
                 pcap_fl, carved_images, image_type)
             fd = open("%s/%s" % (pictures_directory, file_name), "wb")
             fd.write(image)
             fd.close()
             carved_images += 1
-            # now attempt face detection
+            # şimdi yüz tanımayı dene
             try:
                 result = face_detect("%s/%s" % (pictures_directory, file_name),
                                      file_name)

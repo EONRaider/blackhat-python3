@@ -2,8 +2,6 @@
 
 Justin Seitz'in "Black Hat Python" kitabındaki kaynak kodlar. Kodlar tamamen Python 3'e dönüştürüldü, PEP8 standartlarına uyacak şekilde yeniden biçimlendirildi ve kullanımdan kalkan kütüphanelerden kaynaklanan sorunların ortadan kaldırılması için yeniden düzenlendi.
 
-[EONRaider](https://github.com/EONRaider/blackhat-python3) tarafından GitHub'a eklenen bu proje, [Bedirhan Budak](https://github.com/bedirhanbudak) tarafından Türkçe'ye çevrilmiştir.
-
 Kitap boyunca sunulan kaynak kodlarında pek çok iyileştirme yapılabilecek olsa da, okuyucuların kitapta gördüğü şekilde uygulayabilmesi için, kodlar mümkün olduğunca değiştirilmeden bırakılmıştır. Kodlar, bu haliyle bile "docstring"lerden "type hinting" ve "exeption handling"e kadar bazı ciddi düzenlemelere ihtiyaç duyuyor ki içerik yöneticileri gibi geliştirmelerden bahsetmiyorum bile. Ancak bu sorunlar, okuyucu bunları uygulamaya niyetliyse kendi başlarına fayda sağlayabilir. Ayrıca, programın çalışması sırasında ortaya çıkan önemli hatalar engellenmek isteniyorsa, düzeltilmiş olan girintilerden kaynaklanan birçok hatayı da gösteriyor.
  
 *Buna benzer bir çeviri, TJ O'Connor tarafından yazılan "Violent Python" kitabının kaynak kodunda da yapılıp kullanıma sunulmuştur. Henüz bakmadıyanız [buraya](https://github.com/EONRaider/violent-python3) göz atabilirsiniz.*
@@ -38,6 +36,10 @@ Kaynak kodunu düzgün bir şekilde çalıştırmak ve önemli hatalardan korunm
 - `chapter07/git_trojan.py`dosyasındaki `types`, artık kullanımdan kaldırılmış olan `imp` kitaplığının yerini alacak şekilde yeniden düzenlendi. Kitapta anlatıldığı gibi, gerekli konfigürasyon dosyalarını içeren bir alt dizin (subdirectory) yapısı uygulanmıştır. "trojan_config" değişkeninde `config` alt dizinine giden göreli yol eksikti. Orijinal kod tarafından oluşturulan bir AttributeError hatasını önlemek için 60. satıra "to_tree" yöntemine bir kod eklendi. İki adımlı doğrulama kullanılması durumunda kişinin şifresini kullanmak yerine bir "access token"ın nasıl oluşturulacağına ilişkin talimatlar yorum olarak eklendi.
 - `chapter08/keylogger.py`, `PyHook` kitaplığının çalışmasını gerektiriyor. 1.6.2 sürümüyle birlikte bir "wheel" dosyası eklenmiştir. Gerekirse diğer sürümler [buradan](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyhook) indirilebilir.
 - `chapter09/ie_exfil.py`, açık metin değişkeninin (string veya binary olarak görünebilen) "encrypt_string" işlevine dönüştürülmesiyle hatalar düzeldi. Ek olarak, `base64` kütüphanesinin kullanımı düzeltildi. *[Bu commit'te](https://github.com/EONRaider/blackhat-python3/pull/2/commits/fcab6afc19fc4ea01b8c5c475e7b8c5e4b158df6) [Enraged](https://github.com/Enraged) tarafından katkı sağlandı.*
+
+## Çeviriler
+Diğer dillere yapılan çevirileri buradan kontrol edebilirsiniz:
+- [Bedirhan Budak](https://github.com/bedirhanbudak) tarafından [Türkçe](https://github.com/EONRaider/blackhat-python3/tree/turkish-language) diline çevrilmiştir.
 
 ## Katkıda Bulunmak İsteyenler
 Sağduyulu olmak için, önce bu repository'de yapmak istediğiniz değişikliği bir "issue" aracılığıyla tartışmaya çalışın.
