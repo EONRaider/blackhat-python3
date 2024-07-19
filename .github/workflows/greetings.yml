@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request_target, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: "Greetings new contributors! Thank you for the assistance. Feel free to add and modify to improve the useabilty of anything you see fit.' first issue"
+        pr-message: "Pull harder... you're not pulling hard enough!' first pull request"
