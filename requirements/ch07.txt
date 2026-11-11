@@ -1,0 +1,3 @@
+# Generated from pyproject.toml by `python tools/deps_scan.py requirements`.
+# Do not edit by hand. Groups: ch07
+github3.py>=4.0.1,<5

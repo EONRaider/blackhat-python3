@@ -1,0 +1,4 @@
+# Generated from pyproject.toml by `python tools/deps_scan.py requirements`.
+# Do not edit by hand. Groups: ch08
+pywin32>=308; sys_platform == 'win32'
+pywinhook>=1.6.2; sys_platform == 'win32' and python_version < '3.12'

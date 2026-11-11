@@ -1,0 +1,85 @@
+[project]
+name = "blackhat-python3"
+version = "2.0.0"
+description = "Python 3 conversion of the source code from the book \"Black Hat Python\" by Justin Seitz."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "EONRaider" }]
+keywords = ["black-hat-python", "penetration-testing", "offensive-security", "python3", "book"]
+classifiers = [
+    "Private :: Do Not Upload",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Security",
+]
+# This repository is a collection of standalone scripts, not an installable
+# package. All third-party requirements live in per-chapter dependency groups
+# below so that readers can install exactly what a chapter needs.
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/EONRaider/blackhat-python3"
+Issues = "https://github.com/EONRaider/blackhat-python3/issues"
+Changelog = "https://github.com/EONRaider/blackhat-python3/blob/master/CHANGELOG.md"
+
+# PEP 735 dependency groups, one per chapter. Keep these in sync with
+# `tools/import_map.toml`; `python tools/deps_scan.py check` enforces it in CI.
+#
+# Version policy: floors are the oldest release that installs on 3.10-3.14 and
+# has no known advisories. Libraries whose API the book code depends on are
+# capped below their next major version; Dependabot proposes major bumps so
+# each one can be validated against the code before it lands.
+#
+# Chapters 3, 5 and 6 need no third-party packages from PyPI (chapter 6 runs
+# inside Burp Suite under Jython). Chapter 11 needs Immunity Debugger
+# (`immlib`) and Volatility 2, neither of which is installable with pip; see
+# the README.
+[dependency-groups]
+ch02 = ["paramiko>=3.5.0,<4"]
+ch04 = ["kamene>=0.32", "opencv-python>=4.10.0.84,<5"]
+ch07 = ["github3.py>=4.0.1,<5"]
+ch08 = [
+    "pywin32>=308; sys_platform == 'win32'",
+    # pyWinhook only publishes wheels up to CPython 3.11.
+    "pywinhook>=1.6.2; sys_platform == 'win32' and python_version < '3.12'",
+]
+ch09 = ["pycryptodome>=3.21.0,<4", "pywin32>=308; sys_platform == 'win32'"]
+ch10 = ["pywin32>=308; sys_platform == 'win32'", "wmi>=1.5.1; sys_platform == 'win32'"]
+dev = [
+    "mypy>=1.13.0",
+    "pre-commit>=4.0.1",
+    "pytest>=8.3.3",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.0",
+    "tomli>=2.0.1; python_version < '3.11'",
+]
+
+[tool.uv]
+package = false
+default-groups = ["ch02", "ch04", "ch07", "ch08", "ch09", "ch10", "dev"]
+
+# Linting and type-checking cover the repository tooling only. The book code
+# under chapterNN/ is intentionally kept close to the printed listings.
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+include = ["tools/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "BLE", "UP", "SIM", "RUF", "D", "ANN", "PT", "PL"]
+ignore = ["PLR2004"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tools/tests/**" = ["D", "ANN", "PLR2004"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["tools"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tools/tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
