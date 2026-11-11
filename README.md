@@ -111,7 +111,7 @@ capabilities already granted.
 | [05](chapter05) | Web hackery | - | - | Standard library only. Wordlists `all.txt` and `cain.txt` are included. |
 | [06](chapter06) | Extending Burp Proxy | - | - | Burp Suite extensions that run under Jython 2.7 (`jython-standalone-2.7.2.jar` is included), not CPython. |
 | [07](chapter07) | GitHub command and control | `ch07` | `github3.py` | Needs a GitHub repository and a personal access token. |
-| [08](chapter08) | Common trojaning tasks on Windows | `ch08` | `pywin32` (Windows) | Windows only. `keylogger.py` needs `pyHook`; see the conversion notes. |
+| [08](chapter08) | Common trojaning tasks on Windows | `ch08` | `pywin32` (Windows) | Windows only. `keylogger.py` does not run on Python 3.10+ yet: it imports `pyHook`, which nothing installable provides (see the conversion notes). |
 | [09](chapter09) | Fun with Internet Explorer | `ch09` | `pycryptodome`, `pywin32` (Windows) | Windows only, except the crypto helpers. |
 | [10](chapter10) | Windows privilege escalation | `ch10` | `pywin32` (Windows), `wmi` (Windows) | Windows only. `bhvulnservice.zip` is the book's vulnerable service. |
 | [11](chapter11) | Automating offensive forensics | - | - | Needs Immunity Debugger (`immlib`, Python 2.7) and the Volatility 2 framework. Neither installs from PyPI. |

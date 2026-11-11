@@ -23,6 +23,9 @@ bluetooth = { dist = "pybluez", group = "ch05-bt" }
 [external]
 burp = "Burp Suite"
 
+[unresolved]
+oldhook = "no installable package provides it"
+
 [declared_without_import]
 ch05 = ["extra-dist"]
 
@@ -62,6 +65,7 @@ def repo(tmp_path: Path) -> Path:
     write(tmp_path, "chapter02/helper.py", "x = 1\n")
     write(tmp_path, "chapter05/bt.py", "import bluetooth\n")
     write(tmp_path, "chapter06/ext.py", "from burp import IBurpExtender\n")
+    write(tmp_path, "chapter08/hook.py", "import oldhook\n")
     write(tmp_path, "chapter09/skip_me.py", "import not_mapped\n")
     return tmp_path
 
@@ -199,6 +203,9 @@ class TestReportAndCli:
         assert "| chapter02 | `ch02` | `pillow`, `scapy` | - |" in report
         assert "| chapter05 | `ch05-bt` | `pybluez` | - |" in report
         assert "| chapter06 | - | - | Burp Suite |" in report
+        assert (
+            "| chapter08 | - | - | **Unresolved:** no installable package provides it |" in report
+        )
         assert "`standard-crypt` (not Windows, Python 3.13+)" in report
 
     def test_main_report(self, repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -207,7 +214,7 @@ class TestReportAndCli:
 
     def test_main_check_ok(self, repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
         assert deps_scan.main(["--root", str(repo), "check"]) == 0
-        assert capsys.readouterr().out.startswith("OK: 5 files")
+        assert capsys.readouterr().out.startswith("OK: 6 files")
 
     def test_main_check_fails(self, repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
         write(repo, "chapter02/more.py", "import requests\n")
@@ -217,7 +224,12 @@ class TestReportAndCli:
     def test_main_check_import(self, repo: Path) -> None:
         write(repo, "tools/deps_scan.toml", "[external]\nburp = 'Burp'\n")
         write(repo, "pyproject.toml", "[dependency-groups]\n")
-        for rel in ("chapter01/crack.py", "chapter02/sniff.py", "chapter05/bt.py"):
+        for rel in (
+            "chapter01/crack.py",
+            "chapter02/sniff.py",
+            "chapter05/bt.py",
+            "chapter08/hook.py",
+        ):
             (repo / rel).unlink()
         (repo / "chapter09/skip_me.py").unlink()
         assert deps_scan.main(["--root", str(repo), "check", "--import"]) == 0
@@ -267,3 +279,25 @@ class TestRequirements:
         err = capsys.readouterr().err
         assert "requirements/ch02.txt: out of date" in err
         assert "requirements/gone.txt: stale file" in err
+
+
+class TestUnresolved:
+    def test_unresolved_is_not_a_check_failure(self, repo: Path) -> None:
+        config, results = load(repo)
+        groups = deps_scan.load_groups(repo / "pyproject.toml")
+        assert deps_scan.check(results, config, groups) == []
+
+    def test_unresolved_imports_are_listed(self, repo: Path) -> None:
+        config, results = load(repo)
+        (warning,) = deps_scan.unresolved_imports(results, config)
+        assert str(warning) == (
+            "chapter08/hook.py: imports 'oldhook', which nothing installs: "
+            "no installable package provides it"
+        )
+
+    def test_main_check_prints_warning(
+        self, repo: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        assert deps_scan.main(["--root", str(repo), "check"]) == 0
+        err = capsys.readouterr().err
+        assert "WARNING: chapter08/hook.py: imports 'oldhook'" in err

@@ -30,14 +30,20 @@ burp = "Burp Suite Extender API (Jython)"
 immlib = "Immunity Debugger (bundled Python 2.7)"
 java = "Java standard library via Jython"
 javax = "Java standard library via Jython"
-# The code imports `pyHook`; the closest maintained fork on PyPI is `pywinhook`,
-# which exposes the module as `pyWinhook`. It is declared in group ch08.
-pyHook = "pyHook (Windows); declared as its fork `pywinhook` in group `ch08`"
 volatility = "Volatility 2 framework (Python 2)"
+
+# Known-broken imports: nothing installable provides them on the supported
+# Python versions. `check` prints a WARNING for each use on every run, and the
+# README chapter table marks them as unresolved. Remove an entry once the
+# book code is fixed.
+[unresolved]
+pyHook = "`keylogger.py` imports `pyHook`, which has no release for Python 3.10+; its fork `pywinhook` (wheels up to 3.11) installs as `pyWinhook`, so the import needs a code change"
 
 # Distributions intentionally declared in a group although no import maps to
 # them, keyed by group.
 [declared_without_import]
+# pywinhook is the fork chapter08/keylogger.py should move to (see the
+# [unresolved] pyHook entry). It stays declared so that change only touches code.
 ch08 = ["pywinhook"]
 
 # Files excluded from scanning, as repository-relative paths.

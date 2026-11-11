@@ -79,9 +79,18 @@ to the chapter under `cain.txt`
    instead of using one's password in case 2FA is being used were included as comments.
 - `chapter08/keylogger.py` requires the `PyHook` library to work. A wheel file
  has been included with the 1.6.2 version. Other versions used to be published on Christoph Gohlke's "Unofficial Windows
-  Binaries" page, which has been offline since 2022; the maintained fork is
-  [`pyWinhook` on PyPI](https://pypi.org/project/pyWinhook/), declared in the `ch08`
-  dependency group.
+  Binaries" page, which has been offline since 2022.
+
+  > **Current status (2.0.0):** `keylogger.py` does not run on the supported
+  > Python versions as it stands. It imports `pyHook`, which has no release for
+  > Python 3.10 or newer. The bundled wheel is
+  > `pyWinhook-1.6.2-cp38-cp38-win_amd64.whl`, built for Python 3.8 only. The
+  > maintained fork, [`pyWinhook` on PyPI](https://pypi.org/project/pyWinhook/),
+  > publishes wheels up to Python 3.11 and is declared in the `ch08` dependency
+  > group for those versions, but it installs a module named `pyWinhook`, not
+  > `pyHook`. Running the listing therefore needs a code change, which is
+  > tracked as a known issue; `python tools/deps_scan.py check` reports it on
+  > every run.
 - `chapter09/ie_exfil.py` threw errors due to the handling of the plaintext
  variable (which can appear as a string or as a binary string) when handed over
  to the "encrypt_string" function. Additionally, the use of the `base64` library was

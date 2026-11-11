@@ -129,12 +129,16 @@ class Config:
         exclude: Repository-relative file paths that are not scanned.
         declared_without_import: Per-group distributions exempt from the
             "declared but never imported" check.
+        unresolved: Known-broken imports that no installable dependency
+            satisfies, with the reason. ``check`` reports them as warnings on
+            every run so they stay visible without failing CI.
     """
 
     modules: dict[str, ModuleSpec]
     external: dict[str, str]
     exclude: frozenset[str]
     declared_without_import: dict[str, frozenset[str]] = field(default_factory=dict)
+    unresolved: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def load(cls, path: Path) -> Config:
@@ -172,6 +176,7 @@ class Config:
             external=dict(data.get("external", {})),
             exclude=exclude,
             declared_without_import=allowed,
+            unresolved=dict(data.get("unresolved", {})),
         )
 
 
@@ -434,7 +439,7 @@ def check(
             problems.append(Problem(entry.path, f"cannot parse ({entry.error})"))
             continue
         for name in sorted(entry.names):
-            if name in config.external:
+            if name in config.external or name in config.unresolved:
                 continue
             spec = config.modules.get(name)
             if spec is None:
@@ -456,6 +461,28 @@ def check(
             for dist in sorted(unused)
         )
     return problems
+
+
+def unresolved_imports(results: Sequence[FileImports], config: Config) -> list[Problem]:
+    """List every use of an import declared in ``[unresolved]``.
+
+    These are known breaks that no installable dependency fixes yet. They are
+    reported as warnings rather than failures so CI stays meaningful while the
+    break remains visible in every run.
+
+    Args:
+        results: Output of :func:`scan`.
+        config: Scanner configuration.
+
+    Returns:
+        One entry per file and unresolved import, in path order.
+    """
+    return [
+        Problem(entry.path, f"imports {name!r}, which nothing installs: {config.unresolved[name]}")
+        for entry in results
+        for name in sorted(entry.names)
+        if name in config.unresolved
+    ]
 
 
 def check_importable(
@@ -520,6 +547,9 @@ def render_report(results: Sequence[FileImports], config: Config) -> str:
             if (spec := config.modules.get(name)) is not None:
                 packages[spec.group or chapter_group(chapter)].add(_describe(spec))
         external = sorted({config.external[n] for n in names if n in config.external})
+        external += sorted(
+            f"**Unresolved:** {config.unresolved[n]}" for n in names if n in config.unresolved
+        )
         group_cell = ", ".join(f"`{g}`" for g in sorted(packages)) or "-"
         package_cell = ", ".join(sorted(p for ps in packages.values() for p in ps)) or "-"
         lines.append(
@@ -591,6 +621,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         sys.stdout.write(render_report(results, config))
         return 0
 
+    for warning in unresolved_imports(results, config):
+        print(f"WARNING: {warning}", file=sys.stderr)
     problems = check(results, config, load_groups(root / "pyproject.toml"))
     if args.do_import:
         problems += check_importable(results, config, args.skip_group)
