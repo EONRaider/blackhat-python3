@@ -29,7 +29,6 @@ the book. Every change made during the conversion is documented in
 - [Downloading only what you need](#downloading-only-what-you-need)
 - [Authorized use](#authorized-use)
 - [Contributing](#contributing)
-- [Translations](#translations)
 - [License and credits](#license-and-credits)
 
 ## Quick start
@@ -149,10 +148,6 @@ Bug fixes, compatibility fixes for newer libraries and documentation improvement
 welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the scope, the development
 workflow and how releases are cut. Report security issues as described in
 [SECURITY.md](SECURITY.md).
-
-## Translations
-
-- Turkish, by [Bedirhan Budak](https://github.com/bedirhanbudak): [`turkish-language` branch](https://github.com/EONRaider/blackhat-python3/tree/turkish-language)
 
 ## License and credits
 
