@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security issue in the project infrastructure
+    url: https://github.com/EONRaider/blackhat-python3/security/advisories/new
+    about: Report privately. See SECURITY.md for what is in scope.
+  - name: Question about the book's content
+    url: https://github.com/EONRaider/blackhat-python3/discussions
+    about: Ask in Discussions instead of opening an issue.

@@ -1,113 +1,167 @@
-# Python 3 "Black Hat Python" Source Code
+# Black Hat Python 3
 
-Source code for the book "Black Hat Python" by Justin Seitz. The code has been
- fully converted to Python 3, reformatted to comply with PEP8 standards and refactored to eliminate dependency issues involving the implementation of deprecated libraries.
+[![CI](https://github.com/EONRaider/blackhat-python3/actions/workflows/ci.yml/badge.svg)](https://github.com/EONRaider/blackhat-python3/actions/workflows/ci.yml)
+[![Python 3.10-3.14](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?logo=python&logoColor=white)](pyproject.toml)
+[![Managed with uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://docs.astral.sh/uv/)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/EONRaider/blackhat-python3)
 
-Although many optimizations could have been implemented in the source code
- presented
-throughout the book, the code was left unaltered as much as possible so that
-such modifications can be applied by the reader as he sees fit. The code as
-it is needs some serious refactoring efforts ranging from docstrings to type
-hinting and exception handling, not to mention enhancements like context
- managers, but these issues by themselves may come to benefit the reader if 
- he has the intention of implementing them. It also presents many bugs
- originating from indentation that have been corrected if fatal errors were 
- to be avoided during runtime.
- 
-*A conversion similar to this one has been made available by myself on the
- source code of the book "Violent Python", by TJ O'Connor. Check it out
-  [here](https://github.com/EONRaider/violent-python3) if you haven't done it
-   yet.*
+The source code from the first edition of **_Black Hat Python: Python Programming for
+Hackers and Pentesters_** by Justin Seitz (No Starch Press, 2014), converted from
+Python 2 to Python 3 and refactored to run on current interpreters and libraries.
 
-## Usage
-Simply choose a directory (DIR) in which to clone the project using
-`git clone`, create a new virtual environment or `venv` for it (recommended
-) and install the requirements using `pip install`.
+The scripts stay close to the printed listings so they can be read side by side with
+the book. Every change made during the conversion is documented in
+[docs/CONVERSION_NOTES.md](docs/CONVERSION_NOTES.md).
 
+> [!NOTE]
+> No Starch Press published a
+> [second edition](https://nostarch.com/black-hat-python2E) in 2021, by Justin Seitz
+> and Tim Arnold, written for Python 3 from the start. This repository follows the
+> **first** edition. If you have the second edition, use the publisher's code instead.
+>
+> A companion conversion of _Violent Python_ by TJ O'Connor lives at
+> [EONRaider/violent-python3](https://github.com/EONRaider/violent-python3).
+
+## Contents
+
+- [Quick start](#quick-start)
+- [Chapters](#chapters)
+- [Downloading only what you need](#downloading-only-what-you-need)
+- [Authorized use](#authorized-use)
+- [Contributing](#contributing)
+- [Translations](#translations)
+- [License and credits](#license-and-credits)
+
+## Quick start
+
+Python 3.10 or newer. Pick one of the following setups.
+
+### uv (recommended)
+
+[uv](https://docs.astral.sh/uv/getting-started/installation/) installs the right
+Python version if you don't have it and reproduces the exact dependency versions
+tested in CI from `uv.lock`.
+
+```shell
+git clone https://github.com/EONRaider/blackhat-python3.git
+cd blackhat-python3
+uv sync                              # every chapter
+uv run python chapter02/bhnet.py -h
 ```
-user@host:~/DIR$ git clone https://github.com/EONRaider/blackhat-python3
-user@host:~/DIR$ python3 -m venv venv
-user@host:~/DIR$ source venv/bin/activate
-(venv) user@host:~/DIR$ pip install -r requirements.txt
+
+Each chapter is a separate [dependency group](https://peps.python.org/pep-0735/), so you
+can install only what you are reading:
+
+```shell
+uv sync --only-group ch04            # just chapter 4
 ```
 
-## Notes
-- Some listings presented on the book were missing from the author's code
- repository available from "no starch press" website and were
-added to their respective chapters. A more accurate naming convention has
-been applied to the files as necessary in order to relate them to the code
-presented in the book.
-- Minor bugs that generated warnings by the interpreter have been fixed
- throughout the code without altering its characteristics.
-- Auxiliary files that were required to make the code work were added to their 
-respective chapters.
-- As a personal side-note, it could have been possible for the author
- to have written cleaner code without jeopardizing the quickness of
-  implementation that is required for ethical hacking engagements. Why he
-   opted for not doing so remains of unknown reason.
+On Windows, the `ch08`-`ch10` groups also install `pywin32` and `wmi`; on other
+platforms they are skipped automatically.
 
-## Refactoring
+### pip
 
-Critical bug fixes that had to be made in order to properly implement the
- source code and avoid fatal errors:
-- `chapter02/bh_sshserver.py` required the RSA key contained in the `test_rsa.key` file, now included in the corresponding directory.
-- `chapter03/sniffer_ip_header_decode.py` & `sniffer_with_icmp.py` & `scanner.py` all had serious
- issues in the definition of IP packet sizes and portability between 32/64-bit 
- architectures due to problems in the implementation of `struct`. More about these 
- issues on [this thread on Stack Overflow.](https://stackoverflow.com/questions/29306747/python-sniffing-from-black-hat-python-book#29307402)
-- `chapter03/scanner.py` used the `netaddr` library, which is not
- maintained anymore and presents many incompatibilities with Python 3. 
- For that reason the code has been refactored and now uses the `ipaddress`
-  module from Python's `stdlib`.
-- `chapter04/arper.py` & `mail_sniffer.py` used the `scapy` library, which is
- not compatible with Python 3. For that reason the code has been refactored and 
- now uses the `kamene` library.
-- `chapter04/pic_carver.py` now uses the `opencv-python` library instead of
-`cv2`. The "cv2.cv" module was deprecated and has been replaced. The parameter
-"cv2.cv.CV_HAAR_SCALE_IMAGE" from the original code was replaced by 
-"cv2.CASCADE_SCALE_IMAGE" because of [this commit](https://github.com/ragulin/face-recognition-server/commit/7b9773be352cbcd8a3aff50c7371f8aaf737bc5c).
-- `chapter05/content_bruter.py` required a wordlist to work. It has been added
-to the chapter under `all.txt`
-- `chapter05/joomla_killer.py` required a wordlist to work. It has been added
-to the chapter under `cain.txt`
-- `chapter06/bhp_bing.py` & `bhp_fuzzer.py` & `bhp_wordlist.py` have been
- reformatted to comply with PEP8, though some warnings will still be
-  triggered due to the necessity to conform class names to camel-casing in
-   this specific application on Burp Suite.
-- `chapter06/jython-standalone-2.7.2.jar` is available as a more updated
- version of the file relative to the one presented in the book.
-- `chapter07/git_trojan.py` was refactored to replace the `imp` library (now
- deprecated) for `types`. A subdirectory structure with the necessary
-  configuration files has been implemented as instructed in the book. The
-   "trojan_config" variable was missing the relative path to the `config` subdirectory. A call to "to_tree" method was added to line 60 in order to
-   avoid an AttributeError exception generated by the original code.
-   Instructions on how to generate an access token
-   instead of using one's password in case 2FA is being used were included as comments.
-- `chapter08/keylogger.py` requires the `PyHook` library to work. A wheel file
- has been included with the 1.6.2 version. If necessary, other versions can
-  be downloaded from [here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyhook).
-- `chapter09/ie_exfil.py` threw errors due to the handling of the plaintext
- variable (which can appear as a string or as a binary string) when handed over 
- to the "encrypt_string" function. Additionally, the use of the `base64` library was
-  corrected. *Contribution from [Enraged](https://github.com/Enraged) at 
-  [this commit](https://github.com/EONRaider/blackhat-python3/pull/2/commits/fcab6afc19fc4ea01b8c5c475e7b8c5e4b158df6).*
+```shell
+git clone https://github.com/EONRaider/blackhat-python3.git
+cd blackhat-python3
+python3 -m venv .venv
+source .venv/bin/activate            # Windows: .venv\Scripts\activate
+pip install -r requirements.txt      # every chapter
+pip install -r requirements/ch04.txt # or just one chapter
+```
 
-## Translations
-Contributions in other languages can be checked here:
-- Translated to [Turkish](https://github.com/EONRaider/blackhat-python3/tree/turkish-language) by [Bedirhan Budak](https://github.com/bedirhanbudak)
+`requirements*.txt` carry version ranges. For the exact versions tested in CI, use
+`requirements-lock.txt` from the [latest release](https://github.com/EONRaider/blackhat-python3/releases/latest).
+With pip 25.1 or newer, you can also install a chapter's group straight from
+`pyproject.toml` with `pip install --group ch04`.
+
+### Docker
+
+Each [release](https://github.com/EONRaider/blackhat-python3/releases) publishes an
+image for `linux/amd64` and `linux/arm64` with every cross-platform chapter's
+dependencies and common network tools preinstalled:
+
+```shell
+docker run --rm -it ghcr.io/eonraider/blackhat-python3
+# Chapters that sniff or forge packets need raw-socket capabilities:
+docker run --rm -it --cap-add=NET_RAW --cap-add=NET_ADMIN ghcr.io/eonraider/blackhat-python3
+# Or build it yourself:
+docker build -t blackhat-python3 . && docker run --rm -it blackhat-python3
+```
+
+The image runs as `root` because most raw-socket chapters need it. The container
+is the sandbox, so only add the capabilities a chapter needs. The Windows chapters
+(8-10) can't run in it.
+
+### GitHub Codespaces / Dev Containers
+
+Use the **Open in GitHub Codespaces** badge above, or open the folder in VS Code or
+JetBrains with the Dev Containers extension. The container
+([.devcontainer/devcontainer.json](.devcontainer/devcontainer.json)) has the same tools
+as the Docker image, plus `uv`, `git` and compilers, and comes with raw-socket
+capabilities already granted.
+
+## Chapters
+
+| Chapter | Topic | `uv` group | PyPI packages | Notes |
+| --- | --- | --- | --- | --- |
+| [02](chapter02) | The network: basics | `ch02` | `paramiko` | `test_rsa.key` is Paramiko's public test key (from its test suite), needed by `bh_sshserver.py`. |
+| [03](chapter03) | Raw sockets and sniffing | - | - | Standard library only. Needs root / Administrator. |
+| [04](chapter04) | Owning the network with Scapy | `ch04` | `kamene`, `opencv-python` | Uses `kamene`, a Python 3 fork of Scapy from the time of the conversion. Needs root / `NET_RAW`. |
+| [05](chapter05) | Web hackery | - | - | Standard library only. Wordlists `all.txt` and `cain.txt` are included. |
+| [06](chapter06) | Extending Burp Proxy | - | - | Burp Suite extensions that run under Jython 2.7 (`jython-standalone-2.7.2.jar` is included), not CPython. |
+| [07](chapter07) | GitHub command and control | `ch07` | `github3.py` | Needs a GitHub repository and a personal access token. |
+| [08](chapter08) | Common trojaning tasks on Windows | `ch08` | `pywin32` (Windows) | Windows only. `keylogger.py` needs `pyHook`; see the conversion notes. |
+| [09](chapter09) | Fun with Internet Explorer | `ch09` | `pycryptodome`, `pywin32` (Windows) | Windows only, except the crypto helpers. |
+| [10](chapter10) | Windows privilege escalation | `ch10` | `pywin32` (Windows), `wmi` (Windows) | Windows only. `bhvulnservice.zip` is the book's vulnerable service. |
+| [11](chapter11) | Automating offensive forensics | - | - | Needs Immunity Debugger (`immlib`, Python 2.7) and the Volatility 2 framework. Neither installs from PyPI. |
+
+Chapter 1 of the book covers setting up the environment and has no code. The PyPI
+column is generated by `python tools/deps_scan.py report`, which reads the imports in
+each chapter. The OS and privilege notes come from the conversion notes and may be
+incomplete; corrections are welcome.
+
+## Downloading only what you need
+
+A full checkout is about 46 MB plus 51 MB of history. Most of the tree is the 43 MB
+Jython JAR in `chapter06/`, so shallow clones (`--depth 1`) don't save much. To
+download just the chapters you want:
+
+```shell
+git clone --filter=blob:none --sparse https://github.com/EONRaider/blackhat-python3.git
+cd blackhat-python3
+git sparse-checkout set chapter02 chapter03    # any chapters you want
+```
+
+Or skip cloning entirely and use the [Docker image](#docker).
+
+## Authorized use
+
+This code includes trojans, keyloggers, credential harvesters and privilege-escalation
+tooling. Run it only against systems you own or have written permission to test. Some
+files, such as `chapter10/bhvulnservice.zip`, `chapter11/cmeasure.bin` and the
+chapter 8 keylogger, may be flagged by antivirus software. That is expected; see
+[SECURITY.md](SECURITY.md).
 
 ## Contributing
 
-As a matter of common sense, first try to discuss the change you wish to make to
-this repository via an issue.
+Bug fixes, compatibility fixes for newer libraries and documentation improvements are
+welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the scope, the development
+workflow and how releases are cut. Report security issues as described in
+[SECURITY.md](SECURITY.md).
 
-1. Ensure the modifications you wish to introduce actually lead to a pull
-request. The change of one line or two should be requested through an issue
- instead.
-2. If necessary, update the README.md file with details relative to changes to
- the project structure.
-3. Make sure the commit messages that include the modifications follow a
- standard. If you don't know how to proceed, [here](https://chris.beams.io/posts/git-commit/)
-  is a great reference on how to do it.
-4. Your request will be reviewed as soon as possible (usually within 48 hours).
+## Translations
 
+- Turkish, by [Bedirhan Budak](https://github.com/bedirhanbudak): [`turkish-language` branch](https://github.com/EONRaider/blackhat-python3/tree/turkish-language)
+
+## License and credits
+
+The code is derived from _Black Hat Python_ by Justin Seitz, published by No Starch
+Press. **No open-source license is granted**; see [NOTICE](NOTICE) for what that means
+and for the terms of the bundled third-party files. The Python 3 conversion is by
+[EONRaider](https://github.com/EONRaider) and
+[contributors](https://github.com/EONRaider/blackhat-python3/graphs/contributors),
+including fixes from [Enraged](https://github.com/Enraged).
+
+If you reference this repository in academic work, GitHub's **Cite this repository**
+button uses [CITATION.cff](CITATION.cff).

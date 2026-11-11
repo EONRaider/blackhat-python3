@@ -1,0 +1,52 @@
+blackhat-python3
+================
+
+Python 3 conversion of the source code from the book:
+
+    Black Hat Python: Python Programming for Hackers and Pentesters
+    Justin Seitz
+    No Starch Press, 2014 (first edition)
+    ISBN 978-1-59327-590-7
+
+Copyright and licensing
+-----------------------
+
+The original source code is the work of its author and publisher, who hold
+the copyright to it. This repository reproduces it, converted to Python 3,
+so that readers of the book can study and run it on current interpreters.
+
+NO OPEN-SOURCE LICENSE IS GRANTED for the contents of this repository. The
+absence of a LICENSE file is deliberate: the maintainers do not own the
+underlying code and cannot license it to you. If you need rights beyond
+reading and running the code for personal study, contact the publisher.
+
+The Python 3 conversion and the repository tooling (pyproject.toml, tools/,
+.github/, Dockerfile, .devcontainer/ and the documentation) were written by
+EONRaider and the contributors listed in the git history.
+
+Bundled third-party files
+-------------------------
+
+These files are included so the book's exercises can run. They remain under
+their own terms:
+
+chapter06/jython-standalone-2.7.2.jar
+    Jython 2.7.2, https://www.jython.org
+    Jython License (PSF-style) and the licenses of its bundled components;
+    see LICENSE and META-INF/ inside the JAR.
+
+chapter08/pyWinhook-1.6.2-cp38-cp38-win_amd64.whl
+    pyWinhook 1.6.2, https://github.com/Tungsteno74/pyWinhook
+    MIT License.
+
+chapter02/test_rsa.key
+    RSA private key from Paramiko's public test suite
+    (tests/_support/rsa.key at https://github.com/paramiko/paramiko).
+    It is published test data, not a secret, and must never be used to
+    protect anything real.
+
+chapter05/all.txt, chapter05/cain.txt
+    Wordlists used by the book's brute-forcing exercises.
+
+chapter10/bhvulnservice.zip, chapter11/cmeasure.bin, chapter07/config/
+    Exercise material accompanying the book.

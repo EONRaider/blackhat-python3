@@ -1,0 +1,37 @@
+name: Installation or dependency problem
+description: uv, pip, Docker or the dev container fails to set up.
+labels: [dependencies]
+body:
+  - type: dropdown
+    id: method
+    attributes:
+      label: Installation method
+      options:
+        - uv sync
+        - pip install -r requirements.txt
+        - pip install --group
+        - Docker image
+        - Dev container / Codespaces
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command you ran
+      placeholder: uv sync --only-group ch04
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS, CPU architecture and Python version
+      placeholder: macOS 26 (arm64), Python 3.14.0
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Full output
+      render: text
+    validations:
+      required: true
