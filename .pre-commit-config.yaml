@@ -1,0 +1,52 @@
+# Install with `uv run pre-commit install`. Book code under chapterNN/ is never
+# touched by these hooks: the listings keep the book's formatting.
+exclude: ^chapter\d+/
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+        exclude: \.md$
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.4
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.13.7
+    hooks:
+      - id: uv-lock
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.24.0
+    hooks:
+      - id: markdownlint-cli2
+
+  - repo: local
+    hooks:
+      - id: deps-scan
+        name: imports match dependency groups
+        entry: uv run --frozen python tools/deps_scan.py check
+        language: system
+        pass_filenames: false
+        # Chapter files are excluded globally, so run on every commit to catch
+        # an undeclared import added to book code.
+        always_run: true
+      - id: requirements
+        name: regenerate requirements*.txt
+        entry: uv run --frozen python tools/deps_scan.py requirements
+        language: system
+        pass_filenames: false
+        files: ^pyproject\.toml$

@@ -1,0 +1,61 @@
+name: Bug report
+description: A chapter's script fails or behaves differently from the book.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Check [docs/CONVERSION_NOTES.md](https://github.com/EONRaider/blackhat-python3/blob/master/docs/CONVERSION_NOTES.md)
+        first; some differences from the book are intentional.
+  - type: dropdown
+    id: chapter
+    attributes:
+      label: Chapter
+      options:
+        - chapter02
+        - chapter03
+        - chapter04
+        - chapter05
+        - chapter06
+        - chapter07
+        - chapter08
+        - chapter09
+        - chapter10
+        - chapter11
+        - Not chapter-specific
+    validations:
+      required: true
+  - type: input
+    id: script
+    attributes:
+      label: Script
+      placeholder: chapter04/example.py
+    validations:
+      required: true
+  - type: dropdown
+    id: setup
+    attributes:
+      label: How did you install it?
+      options:
+        - uv sync
+        - pip install -r requirements.txt
+        - Docker image
+        - Dev container / Codespaces
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS and Python version
+      placeholder: Kali 2026.3, Python 3.13.9
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: The exact command, the full output or traceback, and what you expected.
+      render: text
+    validations:
+      required: true

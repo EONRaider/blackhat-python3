@@ -1,0 +1,52 @@
+version: 2
+
+# Every ecosystem waits 7 days after a release before proposing it, so a
+# compromised or yanked upload has time to be caught upstream first.
+
+updates:
+  # Python dependencies. `lockfile-only` keeps the version ranges in
+  # pyproject.toml (and therefore requirements*.txt) stable and only refreshes
+  # uv.lock. Raising a range past a major version is a deliberate change that
+  # must be checked against the book code.
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    versioning-strategy: lockfile-only
+    groups:
+      python-deps:
+        patterns: ["*"]
+    commit-message:
+      prefix: "build(deps)"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci(deps)"
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "build(docker)"
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "build(devcontainer)"

@@ -1,0 +1,186 @@
+name: Release
+
+# Push a tag such as v2.0.0 to publish a GitHub Release (with the matching
+# CHANGELOG section and a fully pinned requirements-lock.txt) and a multi-arch
+# container image on GHCR. Tags with a suffix (v2.1.0-rc.1) are published as
+# prereleases, and `latest` only moves to the highest stable version.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions: {}
+
+# Serialise releases: `classify` decides whether a tag gets `latest` before
+# its image is pushed, so two overlapping runs could otherwise publish out of
+# order and leave `latest` on the older version. A running release is never
+# cancelled. GitHub keeps at most one *pending* run per group, so if three or
+# more tags are pushed at once the middle ones are superseded: re-run them.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  classify:
+    name: Classify tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      prerelease: ${{ steps.tag.outputs.prerelease }}
+      latest: ${{ steps.tag.outputs.latest }}
+      minor: ${{ steps.tag.outputs.minor }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: tag
+        run: |
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+          # `latest` only for the highest stable tag, so a backport release
+          # (v2.0.1 after v2.1.0) does not move it backwards.
+          newest=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          if [[ "$GITHUB_REF_NAME" == "$newest" ]]; then
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "latest=false" >> "$GITHUB_OUTPUT"
+          fi
+          # Likewise the X.Y image tag only moves to the highest stable patch
+          # of its own minor line, so re-running v2.0.1 after v2.0.2 does not
+          # move `2.0` back, while a v2.0.3 backport still updates it.
+          minor_line=$(sed -E 's/^(v[0-9]+\.[0-9]+)\..*/\1/' <<< "$GITHUB_REF_NAME")
+          newest_in_line=$(git tag --list "${minor_line}.*" --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          if [[ "$GITHUB_REF_NAME" == "$newest_in_line" ]]; then
+            echo "minor=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "minor=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  assets:
+    name: Release assets
+    # Validate the CHANGELOG section and build the lock file before anything is
+    # published, so a bad tag fails here instead of after the image is pushed.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - name: Build release assets
+        run: |
+          # Default chapter groups only; opt-in groups get their own asset.
+          uv export --frozen --no-dev --no-hashes --output-file requirements-lock.txt
+          version="${GITHUB_REF_NAME#v}"
+          # A section heading is exactly "## [X.Y.Z]" at the start of a line,
+          # optionally followed by " - <date>". Literal string comparison
+          # (index/substr), so the dots in the version are not regex
+          # wildcards and a mention elsewhere in a line does not count.
+          # Prints the number of matching headings; writes the body of the
+          # first one to release-notes.md.
+          headings=$(awk -v v="$version" -v out=release-notes.md '
+            function is_heading(line,    h, rest) {
+              h = "## [" v "]"
+              if (index(line, h) != 1) return 0
+              rest = substr(line, length(h) + 1)
+              return rest == "" || substr(rest, 1, 3) == " - "
+            }
+            BEGIN { printf "" > out }
+            is_heading($0) { n++; on = (n == 1); next }
+            # Any level-2 heading ends the section (`## [x]`, `## Before ...`).
+            on && /^## / { on = 0 }
+            on { print > out }
+            END { print n + 0 }
+          ' CHANGELOG.md)
+          if [[ "$headings" != 1 ]]; then
+            echo "::error::CHANGELOG.md needs exactly one '## [$version]' section (found $headings)"
+            exit 1
+          fi
+          if ! grep -q '[^[:space:]]' release-notes.md; then
+            echo "::error::The '## [$version]' section in CHANGELOG.md is empty"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-assets
+          path: |
+            release-notes.md
+            requirements-lock*.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  github-release:
+    name: GitHub Release
+    # Publish the release only once its container image exists.
+    needs: [classify, assets, image]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-assets
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # No checkout in this job, so name the repository explicitly.
+          GH_REPO: ${{ github.repository }}
+          PRERELEASE: ${{ needs.classify.outputs.prerelease }}
+          LATEST: ${{ needs.classify.outputs.latest }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file release-notes.md \
+            --prerelease="$PRERELEASE" \
+            --latest="$LATEST" \
+            requirements-lock.txt
+
+  image:
+    name: Container image (GHCR)
+    needs: [classify, assets]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ghcr.io/eonraider/blackhat-python3
+          # Never add `latest` implicitly; the classify job decides.
+          flavor: |
+            latest=false
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}},enable=${{ needs.classify.outputs.minor == 'true' }}
+            type=raw,value=latest,enable=${{ needs.classify.outputs.latest == 'true' }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: >-
+  If you use this Python 3 conversion, please cite it with the metadata below and
+  credit the original book in the references.
+type: software
+title: "blackhat-python3: Python 3 source code for Black Hat Python"
+authors:
+  - alias: EONRaider
+repository-code: "https://github.com/EONRaider/blackhat-python3"
+url: "https://github.com/EONRaider/blackhat-python3"
+version: 2.0.0
+keywords:
+  - python3
+  - offensive-security
+  - penetration-testing
+references:
+  - type: book
+    title: "Black Hat Python: Python Programming for Hackers and Pentesters"
+    authors:
+      - family-names: Seitz
+        given-names: Justin
+    publisher:
+      name: No Starch Press
+    year: 2014
+    isbn: "978-1-59327-590-7"

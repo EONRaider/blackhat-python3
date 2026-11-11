@@ -1,0 +1,17 @@
+{
+  // https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+  "config": {
+    "default": true,
+    // Prose is wrapped by hand; tables and URLs can't be.
+    "MD013": false,
+    // Keep a Changelog repeats "### Added" etc. under each release.
+    "MD024": { "siblings_only": true },
+    // The pull request template starts at "## Summary".
+    "MD041": false
+  },
+  "ignores": [
+    "chapter*/**",
+    ".venv/**",
+    "CODE_OF_CONDUCT.md"
+  ]
+}
