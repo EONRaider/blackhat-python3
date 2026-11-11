@@ -1,0 +1,31 @@
+{
+  // Dev container for GitHub Codespaces and VS Code / JetBrains Gateway.
+  // Builds the "dev" stage of the repository Dockerfile: the same system
+  // tools as the published image, plus uv, git and compilers.
+  "name": "blackhat-python3",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    "target": "dev"
+  },
+  // Raw-socket chapters (sniffers, scanners, spoofing) need these.
+  "runArgs": ["--cap-add=NET_RAW", "--cap-add=NET_ADMIN"],
+  "containerEnv": {
+    "UV_PROJECT_ENVIRONMENT": "/opt/venv"
+  },
+  "postCreateCommand": "uv sync --frozen",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/venv/bin/python",
+        "python.terminal.activateEnvironment": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "tamasfe.even-better-toml",
+        "DavidAnson.vscode-markdownlint"
+      ]
+    }
+  }
+}
