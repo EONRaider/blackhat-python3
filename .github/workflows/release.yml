@@ -29,6 +29,7 @@ jobs:
     outputs:
       prerelease: ${{ steps.tag.outputs.prerelease }}
       latest: ${{ steps.tag.outputs.latest }}
+      minor: ${{ steps.tag.outputs.minor }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -48,6 +49,16 @@ jobs:
             echo "latest=true" >> "$GITHUB_OUTPUT"
           else
             echo "latest=false" >> "$GITHUB_OUTPUT"
+          fi
+          # Likewise the X.Y image tag only moves to the highest stable patch
+          # of its own minor line, so re-running v2.0.1 after v2.0.2 does not
+          # move `2.0` back, while a v2.0.3 backport still updates it.
+          minor_line=$(sed -E 's/^(v[0-9]+\.[0-9]+)\..*/\1/' <<< "$GITHUB_REF_NAME")
+          newest_in_line=$(git tag --list "${minor_line}.*" --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          if [[ "$GITHUB_REF_NAME" == "$newest_in_line" ]]; then
+            echo "minor=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "minor=false" >> "$GITHUB_OUTPUT"
           fi
 
   assets:
@@ -82,7 +93,8 @@ jobs:
             }
             BEGIN { printf "" > out }
             is_heading($0) { n++; on = (n == 1); next }
-            on && /^## \[/ { on = 0 }
+            # Any level-2 heading ends the section (`## [x]`, `## Before ...`).
+            on && /^## / { on = 0 }
             on { print > out }
             END { print n + 0 }
           ' CHANGELOG.md)
@@ -159,7 +171,7 @@ jobs:
             latest=false
           tags: |
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}.{{minor}},enable=${{ needs.classify.outputs.minor == 'true' }}
             type=raw,value=latest,enable=${{ needs.classify.outputs.latest == 'true' }}
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
