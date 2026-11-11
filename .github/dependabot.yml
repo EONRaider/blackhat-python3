@@ -1,5 +1,8 @@
 version: 2
 
+# Every ecosystem waits 7 days after a release before proposing it, so a
+# compromised or yanked upload has time to be caught upstream first.
+
 updates:
   # Python dependencies. `lockfile-only` keeps the version ranges in
   # pyproject.toml (and therefore requirements*.txt) stable and only refreshes
@@ -9,6 +12,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     versioning-strategy: lockfile-only
     groups:
       python-deps:
@@ -20,6 +25,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       actions:
         patterns: ["*"]
@@ -30,6 +37,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "build(docker)"
 
@@ -37,5 +46,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "build(devcontainer)"
