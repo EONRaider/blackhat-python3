@@ -1,0 +1,25 @@
+# No global `* text=auto`: it would renormalize line endings in the book's
+# sample data (some files are CRLF on purpose) on the next commit that touches
+# them. Text files are stored exactly as they were committed.
+
+# Binary sample data and bundled tools: never diff, merge or convert.
+*.bin      binary
+*.db       binary
+*.jar      binary linguist-vendored
+*.mmdb     binary
+*.pcap     binary
+*.pdf      binary
+*.sqlite   binary
+*.tar.bz2  binary
+*.whl      binary linguist-vendored
+*.zip      binary
+
+# Generated files: collapsed in pull-request diffs.
+uv.lock             linguist-generated
+requirements.txt    linguist-generated
+requirements/*.txt  linguist-generated
+
+# Keep CI configuration and tooling tests out of `git archive` and GitHub's
+# "Download ZIP" source archives.
+.github      export-ignore
+tools/tests  export-ignore
