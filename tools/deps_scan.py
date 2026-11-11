@@ -378,9 +378,11 @@ def scan(root: Path, config: Config) -> list[FileImports]:
     """Collect third-party and external import names for each chapter file.
 
     Standard-library and repository-local names are dropped, except that a name
-    listed in ``[modules]`` is always kept. This keeps stdlib modules that were
-    removed in newer Python versions (e.g. ``crypt``) visible on every
-    interpreter so results do not depend on the running Python.
+    listed in ``[modules]`` or ``[unresolved]`` is always kept. This keeps stdlib
+    modules that were removed in newer Python versions (e.g. ``crypt``) visible
+    on every interpreter so results do not depend on the running Python, and a
+    chapter file that happens to share an unresolved name cannot hide the
+    warning for an import elsewhere.
 
     Args:
         root: Repository root.
@@ -400,9 +402,8 @@ def scan(root: Path, config: Config) -> list[FileImports]:
         except SyntaxError as exc:
             entry.error = f"line {exc.lineno}: {exc.msg}"
         else:
-            entry.names = {
-                n for n in names if n in config.modules or (n not in stdlib and n not in local)
-            }
+            keep = config.modules.keys() | config.unresolved.keys()
+            entry.names = {n for n in names if n in keep or (n not in stdlib and n not in local)}
         results.append(entry)
     return results
 

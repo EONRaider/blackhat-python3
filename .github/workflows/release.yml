@@ -50,13 +50,13 @@ jobs:
             echo "latest=false" >> "$GITHUB_OUTPUT"
           fi
 
-  github-release:
-    name: GitHub Release
-    # Publish the release only once its container image exists.
-    needs: [classify, image]
+  assets:
+    name: Release assets
+    # Validate the CHANGELOG section and build the lock file before anything is
+    # published, so a bad tag fails here instead of after the image is pushed.
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -94,9 +94,31 @@ jobs:
             echo "::error::The '## [$version]' section in CHANGELOG.md is empty"
             exit 1
           fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-assets
+          path: |
+            release-notes.md
+            requirements-lock*.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  github-release:
+    name: GitHub Release
+    # Publish the release only once its container image exists.
+    needs: [classify, assets, image]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-assets
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
+          # No checkout in this job, so name the repository explicitly.
+          GH_REPO: ${{ github.repository }}
           PRERELEASE: ${{ needs.classify.outputs.prerelease }}
           LATEST: ${{ needs.classify.outputs.latest }}
         run: |
@@ -110,7 +132,7 @@ jobs:
 
   image:
     name: Container image (GHCR)
-    needs: classify
+    needs: [classify, assets]
     runs-on: ubuntu-latest
     permissions:
       contents: read
