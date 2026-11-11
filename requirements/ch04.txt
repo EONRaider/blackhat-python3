@@ -1,4 +1,4 @@
 # Generated from pyproject.toml by `python tools/deps_scan.py requirements`.
 # Do not edit by hand. Groups: ch04
-kamene>=0.32
-opencv-python>=4.10.0.84,<5
+scapy>=2.7.0
+opencv-python-headless>=4.10.0.84,<5

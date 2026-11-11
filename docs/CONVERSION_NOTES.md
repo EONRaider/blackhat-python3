@@ -50,9 +50,13 @@ Critical bug fixes that had to be made in order to properly implement the
  maintained anymore and presents many incompatibilities with Python 3.
  For that reason the code has been refactored and now uses the `ipaddress`
   module from Python's `stdlib`.
-- `chapter04/arper.py` & `mail_sniffer.py` used the `scapy` library, which is
- not compatible with Python 3. For that reason the code has been refactored and
- now uses the `kamene` library.
+- `chapter04/arper.py` & `mail_sniffer.py` originally used `scapy`. The 2020
+ conversion switched them to `kamene` (a Python 3 fork of Scapy) because Scapy
+ of that era did not support Python 3. Scapy has supported Python 3 for years,
+ `kamene` is unmaintained and its IPsec layer now fails to import on Python 3.9+
+ (`from fractions import gcd` was removed), so these scripts were moved back to
+ `from scapy.all import *`. The Scapy API used (`ARP`, `Ether`, `srp`, `sniff`,
+ `send`, `wrpcap`, `conf`) is identical, so no other change was needed.
 - `chapter04/pic_carver.py` now uses the `opencv-python` library instead of
 `cv2`. The "cv2.cv" module was deprecated and has been replaced. The parameter
 "cv2.cv.CV_HAAR_SCALE_IMAGE" from the original code was replaced by
@@ -81,18 +85,62 @@ to the chapter under `cain.txt`
  has been included with the 1.6.2 version. Other versions used to be published on Christoph Gohlke's "Unofficial Windows
   Binaries" page, which has been offline since 2022.
 
-  > **Current status (2.0.0):** `keylogger.py` does not run on the supported
-  > Python versions as it stands. It imports `pyHook`, which has no release for
-  > Python 3.10 or newer. The bundled wheel is
-  > `pyWinhook-1.6.2-cp38-cp38-win_amd64.whl`, built for Python 3.8 only. The
-  > maintained fork, [`pyWinhook` on PyPI](https://pypi.org/project/pyWinhook/),
-  > publishes wheels up to Python 3.11 and is declared in the `ch08` dependency
-  > group for those versions, but it installs a module named `pyWinhook`, not
-  > `pyHook`. Running the listing therefore needs a code change, which is
-  > tracked as a known issue; `python tools/deps_scan.py check` reports it on
-  > every run.
+  > **Current status:** `keylogger.py` now imports the maintained fork
+  > [`pyWinhook`](https://pypi.org/project/pyWinhook/) (`import pyWinhook as
+  > pyHook`), which is API-compatible with the book's `pyHook`. `pyWinhook`
+  > publishes wheels for Windows up to CPython 3.11, so it is declared in the
+  > `ch08` group with a `python_version < '3.12'` marker and the listing runs on
+  > Windows with Python 3.11. The 2020-era bundled wheel
+  > `pyWinhook-1.6.2-cp38-cp38-win_amd64.whl` is kept for reference only. There
+  > is no keyboard-hook library with wheels for CPython 3.12+, so the listing
+  > cannot run there.
 - `chapter09/ie_exfil.py` threw errors due to the handling of the plaintext
  variable (which can appear as a string or as a binary string) when handed over
  to the "encrypt_string" function. Additionally, the use of the `base64` library was
   corrected. *Contribution from Enraged at
   [this commit](https://github.com/EONRaider/blackhat-python3/pull/2/commits/fcab6afc19fc4ea01b8c5c475e7b8c5e4b158df6).*
+
+## Dependency refresh (post-2.0.0)
+
+Version 2.0.0 modernized only the scaffolding and deliberately left the chapter
+code untouched, even where the refreshed dependency ranges had not yet been
+exercised against it. This pass verified each chapter against its current
+dependencies and made the following behavioural changes. Each was validated on
+Linux / CPython 3.13 except where noted.
+
+- **chapter02 (paramiko 2.7 → 5.1):** the group was moved to `paramiko>=5.0.1,<6`
+  to clear [CVE-2026-44405](https://github.com/advisories/GHSA-r374-rxx8-8654)
+  (RSA keys accepting SHA-1 signatures), fixed only in paramiko 5. No code change
+  was required: `RSAKey(filename=...)`, `ServerInterface`, `Transport`, the
+  `OPEN_*`/`AUTH_*` constants and `Channel.send(str)` all behave as the book
+  expects. A full loopback handshake (key exchange, RSA host-key signature,
+  password auth and a bidirectional channel exchange) was run against paramiko
+  5.1.0 with the existing 1024-bit `test_rsa.key`, which paramiko 5 still
+  accepts, so the key was **not** regenerated.
+- **chapter04 (kamene → Scapy):** see the Scapy note above. `pic_carver.py` also
+  had a fatal `NameError` at module scope — it printed `carved_images` /
+  `faces_detected` but bound the `http_assembler` result to `carved_img` /
+  `faces_dtct`. The binding was renamed back to the book's names so the script
+  runs to completion.
+- **chapter04 (OpenCV GUI → headless):** `pic_carver.py` makes no OpenCV GUI
+  calls, so the group now uses `opencv-python-headless`. This drops the `libGL`
+  system dependency from the container image. The `cv2` API it uses
+  (`imread`, `CascadeClassifier`, `detectMultiScale(..., cv2.CASCADE_SCALE_IMAGE,
+  ...)`, `rectangle`, `imwrite`) is unchanged.
+- **chapter07 (github3.py 1.3 → 4.0):** `git_trojan.py` works unchanged against
+  the github3.py 4.0 object model (`login`, `repository`, `branch`,
+  `branch.commit.commit.tree.to_tree().recurse()`, `Hash.path`, `blob.content`,
+  `create_file`). GitHub removed password authentication for the API in November
+  2020, so the dead `login(username=..., password=...)` placeholder was replaced
+  with `login(token="YourToken")` and the token-generation comment was rewritten
+  to point at the current docs.
+- **chapter09 (crypto / pycryptodome):** `decryptor.py` accumulated decrypted
+  blocks into a `str` (`decrypted = ""`), which raised `TypeError` under Python 3
+  because `PKCS1_OAEP.decrypt` returns `bytes`; it now starts from `b""`. With
+  that fix the script decrypts the book's embedded ciphertext end to end. The
+  `ch09` cap was raised to `pycryptodome<5` after validating `decryptor.py` and
+  `keygen.py` against pycryptodome 4.4.0.
+- **chapter10 (`file_monitor.py`):** the literal `"[\o/]"` contained an invalid
+  escape sequence (`SyntaxWarning`, an error on Python 3.12+). It is now a raw
+  string `r"[\o/]"`, which prints identically. CI compiles every chapter with
+  `-W error::SyntaxWarning` to keep these from reappearing.

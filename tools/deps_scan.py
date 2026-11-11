@@ -99,12 +99,16 @@ class ModuleSpec:
             A leading ``!`` inverts it: ``"!win32"`` means every platform but Windows.
         group: Dependency group override; defaults to the importing chapter's group.
         min_python: Minimum ``(major, minor)`` at which the dependency applies.
+        max_python: First ``(major, minor)`` at which the dependency no longer
+            applies, an exclusive upper bound mirroring a
+            ``python_version < 'X.Y'`` environment marker.
     """
 
     dist: str
     platform: str | None = None
     group: str | None = None
     min_python: tuple[int, int] | None = None
+    max_python: tuple[int, int] | None = None
 
     def applies_here(self) -> bool:
         """Return whether this dependency is installed on the running interpreter."""
@@ -112,7 +116,9 @@ class ModuleSpec:
             excluded = self.platform.startswith("!")
             if (sys.platform == self.platform.lstrip("!")) == excluded:
                 return False
-        return self.min_python is None or sys.version_info[:2] >= self.min_python
+        if self.min_python is not None and sys.version_info[:2] < self.min_python:
+            return False
+        return self.max_python is None or sys.version_info[:2] < self.max_python
 
 
 @dataclass(frozen=True)
@@ -156,11 +162,13 @@ class Config:
                 msg = f"[modules].{name} must be a table with a 'dist' key"
                 raise ValueError(msg)
             min_python = raw.get("min_python")
+            max_python = raw.get("max_python")
             modules[name] = ModuleSpec(
                 dist=normalize(raw["dist"]),
                 platform=raw.get("platform"),
                 group=raw.get("group"),
                 min_python=_parse_version(min_python) if min_python else None,
+                max_python=_parse_version(max_python) if max_python else None,
             )
         exclude = frozenset(data.get("exclude", {}).get("files", []))
         allowed = {
@@ -564,6 +572,8 @@ def _describe(spec: ModuleSpec) -> str:
         limits.append(f"not {label}" if spec.platform.startswith("!") else label)
     if spec.min_python is not None:
         limits.append(f"Python {spec.min_python[0]}.{spec.min_python[1]}+")
+    if spec.max_python is not None:
+        limits.append(f"Python <{spec.max_python[0]}.{spec.max_python[1]}")
     return f"`{spec.dist}`" + (f" ({', '.join(limits)})" if limits else "")
 
 

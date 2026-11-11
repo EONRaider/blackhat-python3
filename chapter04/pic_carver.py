@@ -1,5 +1,5 @@
 import cv2
-from kamene.all import *
+from scapy.all import *
 
 pictures_directory = "pic_carver/pictures"
 faces_directory = "pic_carver/faces"
@@ -102,7 +102,7 @@ def http_assembler(pcap_fl):
     return carved_images, faces_detected
 
 
-carved_img, faces_dtct = http_assembler(pcap_file)
+carved_images, faces_detected = http_assembler(pcap_file)
 
 print("Extracted: %d images" % carved_images)
 print("Detected: %d faces" % faces_detected)

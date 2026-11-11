@@ -37,7 +37,7 @@ rsakey = RSA.importKey(private_key)
 rsakey = PKCS1_OAEP.new(rsakey)
 
 offset = 0
-decrypted = ""
+decrypted = b""
 encrypted = base64.b64decode(encrypted)
 
 while offset < len(encrypted):

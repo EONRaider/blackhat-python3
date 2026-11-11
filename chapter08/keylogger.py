@@ -1,6 +1,10 @@
 from ctypes import *
 import pythoncom
-import pyHook
+# The book imports PyHook, which has no release for Python 3. pyWinhook is a
+# maintained, API-compatible fork; it installs the module as `pyWinhook` and is
+# aliased here so the rest of the listing matches the book. Wheels are published
+# for CPython up to 3.11 and Windows only.
+import pyWinhook as pyHook
 import win32clipboard
 
 user32 = windll.user32

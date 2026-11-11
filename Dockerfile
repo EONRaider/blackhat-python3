@@ -36,7 +36,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # ---------------------------------------------------------------------------
 FROM python:${PYTHON_VERSION}-slim-bookworm AS base
 RUN apt-get update \
- && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 libpcap0.8 tcpdump iproute2 iputils-ping net-tools openssh-client netcat-openbsd \
+ && apt-get install -y --no-install-recommends libglib2.0-0 libpcap0.8 tcpdump iproute2 iputils-ping net-tools openssh-client netcat-openbsd \
  && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH=/opt/venv/bin:$PATH \

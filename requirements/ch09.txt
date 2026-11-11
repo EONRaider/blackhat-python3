@@ -1,4 +1,4 @@
 # Generated from pyproject.toml by `python tools/deps_scan.py requirements`.
 # Do not edit by hand. Groups: ch09
-pycryptodome>=3.21.0,<4
+pycryptodome>=3.21.0,<5
 pywin32>=308; sys_platform == 'win32'

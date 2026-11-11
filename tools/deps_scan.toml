@@ -6,12 +6,15 @@
 #               with "!" to exclude a platform instead (e.g. "!win32")
 #   group       dependency group, when not the importing chapter's own chNN
 #   min_python  first Python version that needs it (e.g. stdlib removals)
+#   max_python  first Python version that no longer applies (exclusive upper
+#               bound, mirroring a `python_version < 'X.Y'` marker)
 [modules]
 Crypto = { dist = "pycryptodome" }
-cv2 = { dist = "opencv-python" }
+cv2 = { dist = "opencv-python-headless" }
 github3 = { dist = "github3.py" }
-kamene = { dist = "kamene" }
 paramiko = { dist = "paramiko" }
+scapy = { dist = "scapy" }
+pyWinhook = { dist = "pywinhook", platform = "win32", max_python = "3.12" }
 pythoncom = { dist = "pywin32", platform = "win32" }
 win32api = { dist = "pywin32", platform = "win32" }
 win32clipboard = { dist = "pywin32", platform = "win32" }
@@ -37,14 +40,10 @@ volatility = "Volatility 2 framework (Python 2)"
 # README chapter table marks them as unresolved. Remove an entry once the
 # book code is fixed.
 [unresolved]
-pyHook = "`keylogger.py` imports `pyHook`, which has no release for Python 3.10+; its fork `pywinhook` (wheels up to 3.11) installs as `pyWinhook`, so the import needs a code change"
 
 # Distributions intentionally declared in a group although no import maps to
 # them, keyed by group.
 [declared_without_import]
-# pywinhook is the fork chapter08/keylogger.py should move to (see the
-# [unresolved] pyHook entry). It stays declared so that change only touches code.
-ch08 = ["pywinhook"]
 
 # Files excluded from scanning, as repository-relative paths.
 [exclude]
