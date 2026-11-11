@@ -161,7 +161,7 @@ Press. **No open-source license is granted**; see [NOTICE](NOTICE) for what that
 and for the terms of the bundled third-party files. The Python 3 conversion is by
 [EONRaider](https://github.com/EONRaider) and
 [contributors](https://github.com/EONRaider/blackhat-python3/graphs/contributors),
-including fixes from [Enraged](https://github.com/Enraged).
+including fixes from Enraged.
 
 If you reference this repository in academic work, GitHub's **Cite this repository**
 button uses [CITATION.cff](CITATION.cff).

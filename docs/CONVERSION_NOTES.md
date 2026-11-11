@@ -85,5 +85,5 @@ to the chapter under `cain.txt`
 - `chapter09/ie_exfil.py` threw errors due to the handling of the plaintext
  variable (which can appear as a string or as a binary string) when handed over
  to the "encrypt_string" function. Additionally, the use of the `base64` library was
-  corrected. *Contribution from [Enraged](https://github.com/Enraged) at
+  corrected. *Contribution from Enraged at
   [this commit](https://github.com/EONRaider/blackhat-python3/pull/2/commits/fcab6afc19fc4ea01b8c5c475e7b8c5e4b158df6).*
