@@ -11,6 +11,15 @@ on:
 
 permissions: {}
 
+# Serialise releases: `classify` decides whether a tag gets `latest` before
+# its image is pushed, so two overlapping runs could otherwise publish out of
+# order and leave `latest` on the older version. A running release is never
+# cancelled. GitHub keeps at most one *pending* run per group, so if three or
+# more tags are pushed at once the middle ones are superseded: re-run them.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   classify:
     name: Classify tag
@@ -58,16 +67,29 @@ jobs:
           # Default chapter groups only; opt-in groups get their own asset.
           uv export --frozen --no-dev --no-hashes --output-file requirements-lock.txt
           version="${GITHUB_REF_NAME#v}"
-          headings=$(grep -cF "## [$version]" CHANGELOG.md || true)
+          # A section heading is exactly "## [X.Y.Z]" at the start of a line,
+          # optionally followed by " - <date>". Literal string comparison
+          # (index/substr), so the dots in the version are not regex
+          # wildcards and a mention elsewhere in a line does not count.
+          # Prints the number of matching headings; writes the body of the
+          # first one to release-notes.md.
+          headings=$(awk -v v="$version" -v out=release-notes.md '
+            function is_heading(line,    h, rest) {
+              h = "## [" v "]"
+              if (index(line, h) != 1) return 0
+              rest = substr(line, length(h) + 1)
+              return rest == "" || substr(rest, 1, 3) == " - "
+            }
+            BEGIN { printf "" > out }
+            is_heading($0) { n++; on = (n == 1); next }
+            on && /^## \[/ { on = 0 }
+            on { print > out }
+            END { print n + 0 }
+          ' CHANGELOG.md)
           if [[ "$headings" != 1 ]]; then
             echo "::error::CHANGELOG.md needs exactly one '## [$version]' section (found $headings)"
             exit 1
           fi
-          awk -v v="$version" '
-            $0 ~ "^## \\[" v "\\]" { on = 1; next }
-            on && /^## \[/ { exit }
-            on { print }
-          ' CHANGELOG.md > release-notes.md
           if ! grep -q '[^[:space:]]' release-notes.md; then
             echo "::error::The '## [$version]' section in CHANGELOG.md is empty"
             exit 1
