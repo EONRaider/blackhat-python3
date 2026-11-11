@@ -29,25 +29,20 @@ Changelog = "https://github.com/EONRaider/blackhat-python3/blob/master/CHANGELOG
 # capped below their next major version; Dependabot proposes major bumps so
 # each one can be validated against the code before it lands.
 #
-# Known exception: paramiko <4 is still affected by CVE-2026-44405
-# (GHSA-r374-rxx8-8654, RSA keys accept SHA-1 signatures). The fix is only in
-# paramiko 5, which drops SHA-1, raises the minimum RSA modulus and reorganizes
-# PKey, so lifting the cap waits until chapter 2 is verified against it.
-#
 # Chapters 3, 5 and 6 need no third-party packages from PyPI (chapter 6 runs
 # inside Burp Suite under Jython). Chapter 11 needs Immunity Debugger
 # (`immlib`) and Volatility 2, neither of which is installable with pip; see
 # the README.
 [dependency-groups]
-ch02 = ["paramiko>=3.5.0,<4"]
-ch04 = ["kamene>=0.32", "opencv-python>=4.10.0.84,<5"]
+ch02 = ["paramiko>=5.0.1,<6"]
+ch04 = ["scapy>=2.7.0", "opencv-python-headless>=4.10.0.84,<5"]
 ch07 = ["github3.py>=4.0.1,<5"]
 ch08 = [
     "pywin32>=308; sys_platform == 'win32'",
     # pyWinhook only publishes wheels up to CPython 3.11.
     "pywinhook>=1.6.2; sys_platform == 'win32' and python_version < '3.12'",
 ]
-ch09 = ["pycryptodome>=3.21.0,<4", "pywin32>=308; sys_platform == 'win32'"]
+ch09 = ["pycryptodome>=3.21.0,<5", "pywin32>=308; sys_platform == 'win32'"]
 ch10 = ["pywin32>=308; sys_platform == 'win32'", "wmi>=1.5.1; sys_platform == 'win32'"]
 dev = [
     "mypy>=1.13.0",

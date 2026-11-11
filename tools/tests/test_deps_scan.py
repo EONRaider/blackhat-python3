@@ -149,6 +149,19 @@ class TestModuleSpec:
         assert not deps_scan.ModuleSpec("x", min_python=future).applies_here()
         assert deps_scan.ModuleSpec("x", min_python=(3, 0)).applies_here()
 
+    def test_python_ceiling(self) -> None:
+        """``max_python`` excludes interpreters at or above the exclusive bound."""
+        current = sys.version_info[:2]
+        future = (sys.version_info.major, sys.version_info.minor + 1)
+        assert not deps_scan.ModuleSpec("x", max_python=current).applies_here()
+        assert deps_scan.ModuleSpec("x", max_python=future).applies_here()
+
+    def test_describe_renders_python_ceiling(self) -> None:
+        """``max_python`` is shown as a ``Python <X.Y`` limit in the report."""
+        assert "Python <3.12" in deps_scan._describe(
+            deps_scan.ModuleSpec("pywinhook", platform="win32", max_python=(3, 12))
+        )
+
 
 class TestScan:
     """Per-file import collection."""
