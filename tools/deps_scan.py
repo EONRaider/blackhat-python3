@@ -100,6 +100,7 @@ class ModuleSpec:
     Attributes:
         dist: Normalized distribution name that provides the module.
         platform: ``sys.platform`` value the distribution is limited to, if any.
+            A leading ``!`` inverts it: ``"!win32"`` means every platform but Windows.
         group: Dependency group override; defaults to the importing chapter's group.
         min_python: Minimum ``(major, minor)`` at which the dependency applies.
     """
@@ -111,8 +112,10 @@ class ModuleSpec:
 
     def applies_here(self) -> bool:
         """Return whether this dependency is installed on the running interpreter."""
-        if self.platform is not None and sys.platform != self.platform:
-            return False
+        if self.platform is not None:
+            excluded = self.platform.startswith("!")
+            if (sys.platform == self.platform.lstrip("!")) == excluded:
+                return False
         return self.min_python is None or sys.version_info[:2] >= self.min_python
 
 
@@ -529,7 +532,9 @@ def _describe(spec: ModuleSpec) -> str:
     """Return a short human-readable label for a distribution and its limits."""
     limits: list[str] = []
     if spec.platform is not None:
-        limits.append(_PLATFORM_NAMES.get(spec.platform, spec.platform))
+        name = spec.platform.lstrip("!")
+        label = _PLATFORM_NAMES.get(name, name)
+        limits.append(f"not {label}" if spec.platform.startswith("!") else label)
     if spec.min_python is not None:
         limits.append(f"Python {spec.min_python[0]}.{spec.min_python[1]}+")
     return f"`{spec.dist}`" + (f" ({', '.join(limits)})" if limits else "")

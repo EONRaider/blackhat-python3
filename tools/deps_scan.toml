@@ -2,7 +2,8 @@
 #
 # [modules] maps a top-level import name to the PyPI distribution that provides
 # it. Optional keys:
-#   platform    sys.platform value the dependency is limited to
+#   platform    sys.platform value the dependency is limited to; prefix
+#               with "!" to exclude a platform instead (e.g. "!win32")
 #   group       dependency group, when not the importing chapter's own chNN
 #   min_python  first Python version that needs it (e.g. stdlib removals)
 [modules]

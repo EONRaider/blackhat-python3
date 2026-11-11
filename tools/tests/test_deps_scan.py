@@ -16,7 +16,7 @@ CONFIG = """
 [modules]
 scapy = { dist = "scapy" }
 PIL = { dist = "Pillow" }
-crypt = { dist = "standard-crypt", min_python = "3.13" }
+crypt = { dist = "standard-crypt", platform = "!win32", min_python = "3.13" }
 winonly = { dist = "pywin32", platform = "win32" }
 bluetooth = { dist = "pybluez", group = "ch05-bt" }
 
@@ -115,6 +115,13 @@ class TestModuleSpec:
         assert not deps_scan.ModuleSpec("pywin32", platform="win32").applies_here()
         assert deps_scan.ModuleSpec("x", platform="linux").applies_here()
 
+    def test_negated_platform_gate(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        spec = deps_scan.ModuleSpec("standard-crypt", platform="!win32")
+        monkeypatch.setattr(sys, "platform", "win32")
+        assert not spec.applies_here()
+        monkeypatch.setattr(sys, "platform", "darwin")
+        assert spec.applies_here()
+
     def test_python_gate(self) -> None:
         future = (sys.version_info.major, sys.version_info.minor + 1)
         assert not deps_scan.ModuleSpec("x", min_python=future).applies_here()
@@ -192,7 +199,7 @@ class TestReportAndCli:
         assert "| chapter02 | `ch02` | `pillow`, `scapy` | - |" in report
         assert "| chapter05 | `ch05-bt` | `pybluez` | - |" in report
         assert "| chapter06 | - | - | Burp Suite |" in report
-        assert "`standard-crypt` (Python 3.13+)" in report
+        assert "`standard-crypt` (not Windows, Python 3.13+)" in report
 
     def test_main_report(self, repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
         assert deps_scan.main(["--root", str(repo), "report"]) == 0
