@@ -22,7 +22,7 @@ Issues = "https://github.com/EONRaider/blackhat-python3/issues"
 Changelog = "https://github.com/EONRaider/blackhat-python3/blob/master/CHANGELOG.md"
 
 # PEP 735 dependency groups, one per chapter. Keep these in sync with
-# `tools/import_map.toml`; `python tools/deps_scan.py check` enforces it in CI.
+# `tools/deps_scan.toml`; `python tools/deps_scan.py check` enforces it in CI.
 #
 # Version policy: floors are the oldest release that installs on 3.10-3.14 and
 # has no known advisories. Libraries whose API the book code depends on are
