@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  manifest:
+    name: Manifest consistency
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - name: uv.lock matches pyproject.toml
+        run: uv lock --check
+      - name: Every import is declared in its chapter's dependency group
+        run: uv run --frozen --only-group dev python tools/deps_scan.py check
+      - name: requirements*.txt are up to date
+        run: uv run --frozen --only-group dev python tools/deps_scan.py requirements --check
+
+  tooling:
+    name: Repository tooling (ruff, mypy, pytest)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - run: uv sync --frozen --only-group dev
+      - run: uv run --frozen ruff format --check
+      - run: uv run --frozen ruff check --output-format=github
+      - run: uv run --frozen mypy
+      - run: uv run --frozen pytest --cov=tools --cov-report=term-missing
+
+  compat:
+    name: Install / ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    env:
+      UV_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - name: Sync every chapter group
+        run: uv sync --frozen
+      - name: Every third-party import resolves
+        run: uv run --frozen python tools/deps_scan.py check --import
+      - name: Every chapter byte-compiles
+        shell: bash
+        run: uv run --frozen python -m compileall -q chapter*
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: local/image:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Imports resolve inside the image
+        run: docker run --rm local/image:ci python tools/deps_scan.py check --import

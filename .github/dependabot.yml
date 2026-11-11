@@ -1,0 +1,41 @@
+version: 2
+
+updates:
+  # Python dependencies. `lockfile-only` keeps the version ranges in
+  # pyproject.toml (and therefore requirements*.txt) stable and only refreshes
+  # uv.lock. Raising a range past a major version is a deliberate change that
+  # must be checked against the book code.
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    versioning-strategy: lockfile-only
+    groups:
+      python-deps:
+        patterns: ["*"]
+    commit-message:
+      prefix: "build(deps)"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci(deps)"
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "build(docker)"
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "build(devcontainer)"
