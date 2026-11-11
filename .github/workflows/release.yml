@@ -2,7 +2,8 @@ name: Release
 
 # Push a tag such as v2.0.0 to publish a GitHub Release (with the matching
 # CHANGELOG section and a fully pinned requirements-lock.txt) and a multi-arch
-# container image on GHCR.
+# container image on GHCR. Tags with a suffix (v2.1.0-rc.1) are published as
+# prereleases, and `latest` only moves to the highest stable version.
 
 on:
   push:
@@ -11,8 +12,38 @@ on:
 permissions: {}
 
 jobs:
+  classify:
+    name: Classify tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      prerelease: ${{ steps.tag.outputs.prerelease }}
+      latest: ${{ steps.tag.outputs.latest }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: tag
+        run: |
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+          # `latest` only for the highest stable tag, so a backport release
+          # (v2.0.1 after v2.1.0) does not move it backwards.
+          newest=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          if [[ "$GITHUB_REF_NAME" == "$newest" ]]; then
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "latest=false" >> "$GITHUB_OUTPUT"
+          fi
+
   github-release:
     name: GitHub Release
+    needs: classify
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,23 +56,37 @@ jobs:
         run: |
           uv export --frozen --no-dev --all-groups --no-hashes --output-file requirements-lock.txt
           version="${GITHUB_REF_NAME#v}"
+          headings=$(grep -cF "## [$version]" CHANGELOG.md || true)
+          if [[ "$headings" != 1 ]]; then
+            echo "::error::CHANGELOG.md needs exactly one '## [$version]' section (found $headings)"
+            exit 1
+          fi
           awk -v v="$version" '
             $0 ~ "^## \\[" v "\\]" { on = 1; next }
             on && /^## \[/ { exit }
             on { print }
           ' CHANGELOG.md > release-notes.md
+          if ! grep -q '[^[:space:]]' release-notes.md; then
+            echo "::error::The '## [$version]' section in CHANGELOG.md is empty"
+            exit 1
+          fi
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ needs.classify.outputs.prerelease }}
+          LATEST: ${{ needs.classify.outputs.latest }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
             --verify-tag \
             --title "$GITHUB_REF_NAME" \
             --notes-file release-notes.md \
+            --prerelease="$PRERELEASE" \
+            --latest="$LATEST" \
             requirements-lock.txt
 
   image:
     name: Container image (GHCR)
+    needs: classify
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -63,10 +108,13 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ghcr.io/eonraider/blackhat-python3
+          # Never add `latest` implicitly; the classify job decides.
+          flavor: |
+            latest=false
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ needs.classify.outputs.latest == 'true' }}
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
