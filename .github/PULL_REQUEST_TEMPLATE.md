@@ -13,5 +13,5 @@
 
 - [ ] Behavioural changes to book code are recorded in `docs/CONVERSION_NOTES.md`
 - [ ] User-visible changes are listed under `## [Unreleased]` in `CHANGELOG.md`
-- [ ] If dependencies changed: `uv lock` and `python tools/deps_scan.py requirements` were run
+- [ ] If dependencies changed: `uv lock` and `uv run python tools/deps_scan.py requirements` were run
 - [ ] `uv run python tools/deps_scan.py check --import` passes locally
