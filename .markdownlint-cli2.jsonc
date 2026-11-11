@@ -9,7 +9,6 @@
     // The pull request template starts at "## Summary".
     "MD041": false
   },
-  "globs": ["**/*.md"],
   "ignores": [
     "chapter*/**",
     ".venv/**",

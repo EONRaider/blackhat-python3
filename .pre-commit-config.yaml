@@ -41,7 +41,9 @@ repos:
         entry: uv run --frozen python tools/deps_scan.py check
         language: system
         pass_filenames: false
-        files: ^(pyproject\.toml|tools/deps_scan\.(py|toml))$
+        # Chapter files are excluded globally, so run on every commit to catch
+        # an undeclared import added to book code.
+        always_run: true
       - id: requirements
         name: regenerate requirements*.txt
         entry: uv run --frozen python tools/deps_scan.py requirements
