@@ -43,7 +43,8 @@ jobs:
 
   github-release:
     name: GitHub Release
-    needs: classify
+    # Publish the release only once its container image exists.
+    needs: [classify, image]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -54,7 +55,8 @@ jobs:
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
       - name: Build release assets
         run: |
-          uv export --frozen --no-dev --all-groups --no-hashes --output-file requirements-lock.txt
+          # Default chapter groups only; opt-in groups get their own asset.
+          uv export --frozen --no-dev --no-hashes --output-file requirements-lock.txt
           version="${GITHUB_REF_NAME#v}"
           headings=$(grep -cF "## [$version]" CHANGELOG.md || true)
           if [[ "$headings" != 1 ]]; then
