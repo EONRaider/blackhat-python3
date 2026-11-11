@@ -1,0 +1,44 @@
+# Configuration for tools/deps_scan.py.
+#
+# [modules] maps a top-level import name to the PyPI distribution that provides
+# it. Optional keys:
+#   platform    sys.platform value the dependency is limited to
+#   group       dependency group, when not the importing chapter's own chNN
+#   min_python  first Python version that needs it (e.g. stdlib removals)
+[modules]
+Crypto = { dist = "pycryptodome" }
+cv2 = { dist = "opencv-python" }
+github3 = { dist = "github3.py" }
+kamene = { dist = "kamene" }
+paramiko = { dist = "paramiko" }
+pythoncom = { dist = "pywin32", platform = "win32" }
+win32api = { dist = "pywin32", platform = "win32" }
+win32clipboard = { dist = "pywin32", platform = "win32" }
+win32com = { dist = "pywin32", platform = "win32" }
+win32con = { dist = "pywin32", platform = "win32" }
+win32file = { dist = "pywin32", platform = "win32" }
+win32gui = { dist = "pywin32", platform = "win32" }
+win32security = { dist = "pywin32", platform = "win32" }
+win32ui = { dist = "pywin32", platform = "win32" }
+wmi = { dist = "wmi", platform = "win32" }
+
+# Imports satisfied by software that is not on PyPI. Listed in the README
+# chapter table and skipped by `check`.
+[external]
+burp = "Burp Suite Extender API (Jython)"
+immlib = "Immunity Debugger (bundled Python 2.7)"
+java = "Java standard library via Jython"
+javax = "Java standard library via Jython"
+# The code imports `pyHook`; the closest maintained fork on PyPI is `pywinhook`,
+# which exposes the module as `pyWinhook`. It is declared in group ch08.
+pyHook = "pyHook (Windows); declared as its fork `pywinhook` in group `ch08`"
+volatility = "Volatility 2 framework (Python 2)"
+
+# Distributions intentionally declared in a group although no import maps to
+# them, keyed by group.
+[declared_without_import]
+ch08 = ["pywinhook"]
+
+# Files excluded from scanning, as repository-relative paths.
+[exclude]
+files = []
