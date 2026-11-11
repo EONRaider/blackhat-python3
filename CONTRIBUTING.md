@@ -72,6 +72,12 @@ Dependabot refreshes `uv.lock` weekly without touching the version ranges. Raisi
 a range past a major version is a deliberate change: check the affected chapter
 first.
 
+A floor must not admit a release with a known advisory. When raising one for a
+security fix, use the first release that [OSV](https://osv.dev/) lists as unaffected,
+and record it under "Security" in `CHANGELOG.md`. An advisory that can only be fixed
+by crossing a major version is documented as a known exception in `pyproject.toml`
+until the affected chapter has been verified.
+
 ## Commits and pull requests
 
 - Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)

@@ -3,7 +3,7 @@ name = "blackhat-python3"
 version = "2.0.0"
 description = "Python 3 conversion of the source code from the book \"Black Hat Python\" by Justin Seitz."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "EONRaider" }]
 keywords = ["black-hat-python", "penetration-testing", "offensive-security", "python3", "book"]
 classifiers = [
@@ -24,10 +24,15 @@ Changelog = "https://github.com/EONRaider/blackhat-python3/blob/master/CHANGELOG
 # PEP 735 dependency groups, one per chapter. Keep these in sync with
 # `tools/deps_scan.toml`; `python tools/deps_scan.py check` enforces it in CI.
 #
-# Version policy: floors are the oldest release that installs on 3.10-3.14 and
-# has no known advisories. Libraries whose API the book code depends on are
+# Version policy: floors are the oldest release that installs on 3.11-3.14 and
+# has no known advisories (checked against OSV). Libraries whose API the book code depends on are
 # capped below their next major version; Dependabot proposes major bumps so
 # each one can be validated against the code before it lands.
+#
+# Known exception: paramiko <4 is still affected by CVE-2026-44405
+# (GHSA-r374-rxx8-8654, RSA keys accept SHA-1 signatures). The fix is only in
+# paramiko 5, which drops SHA-1, raises the minimum RSA modulus and reorganizes
+# PKey, so lifting the cap waits until chapter 2 is verified against it.
 #
 # Chapters 3, 5 and 6 need no third-party packages from PyPI (chapter 6 runs
 # inside Burp Suite under Jython). Chapter 11 needs Immunity Debugger
@@ -47,10 +52,9 @@ ch10 = ["pywin32>=308; sys_platform == 'win32'", "wmi>=1.5.1; sys_platform == 'w
 dev = [
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
-    "pytest>=8.3.3",
+    "pytest>=9.0.3",
     "pytest-cov>=6.0.0",
     "ruff>=0.8.0",
-    "tomli>=2.0.1; python_version < '3.11'",
 ]
 
 [tool.uv]
@@ -60,7 +64,7 @@ default-groups = ["ch02", "ch04", "ch07", "ch08", "ch09", "ch10", "dev"]
 # Linting and type-checking cover the repository tooling only. The book code
 # under chapterNN/ is intentionally kept close to the printed listings.
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 line-length = 100
 include = ["tools/**/*.py"]
 
@@ -75,11 +79,11 @@ convention = "google"
 "tools/tests/**" = ["D", "ANN", "PLR2004"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 files = ["tools"]
 
 [tool.pytest.ini_options]
-minversion = "8.0"
+minversion = "9.0"
 testpaths = ["tools/tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config"]

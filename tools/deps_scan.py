@@ -40,16 +40,12 @@ import ast
 import importlib
 import re
 import sys
+import tomllib
 import warnings
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:  # pragma: no cover - exercised only on Python 3.10
-    import tomli as tomllib  # type: ignore[import-not-found,unused-ignore]
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Sequence
