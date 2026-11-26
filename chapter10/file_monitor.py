@@ -40,7 +40,7 @@ def inject_code(full_filename, extension, contents):
     fd.write(full_contents.encode())
     fd.close()
 
-    print("[\o/] Injected code.")
+    print(r"[\o/] Injected code.")
 
     return
 

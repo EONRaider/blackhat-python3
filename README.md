@@ -107,11 +107,11 @@ capabilities already granted.
 | --- | --- | --- | --- | --- |
 | [02](chapter02) | The network: basics | `ch02` | `paramiko` | `test_rsa.key` is Paramiko's public test key (from its test suite), needed by `bh_sshserver.py`. |
 | [03](chapter03) | Raw sockets and sniffing | - | - | Standard library only. Needs root / Administrator. |
-| [04](chapter04) | Owning the network with Scapy | `ch04` | `kamene`, `opencv-python` | Uses `kamene`, a Python 3 fork of Scapy from the time of the conversion. Needs root / `NET_RAW`. |
+| [04](chapter04) | Owning the network with Scapy | `ch04` | `opencv-python-headless`, `scapy` | Uses Scapy directly; the conversion's `kamene` fork is unmaintained and no longer imports on current Python. `pic_carver.py` needs the OpenCV cascade and a pcap from the book; it makes no GUI calls, so the headless build is used. Sniffing and ARP poisoning need root / `NET_RAW`. |
 | [05](chapter05) | Web hackery | - | - | Standard library only. Wordlists `all.txt` and `cain.txt` are included. |
 | [06](chapter06) | Extending Burp Proxy | - | - | Burp Suite extensions that run under Jython 2.7 (`jython-standalone-2.7.2.jar` is included), not CPython. |
 | [07](chapter07) | GitHub command and control | `ch07` | `github3.py` | Needs a GitHub repository and a personal access token. |
-| [08](chapter08) | Common trojaning tasks on Windows | `ch08` | `pywin32` (Windows) | Windows only. `keylogger.py` does not run on any supported Python yet: it imports `pyHook`, which nothing installable provides (see the conversion notes). |
+| [08](chapter08) | Common trojaning tasks on Windows | `ch08` | `pywin32` (Windows), `pywinhook` (Windows, Python <3.12) | Windows only. `keylogger.py` imports `pyWinhook`, the maintained `pyHook` fork, whose wheels cover Windows up to Python 3.11; run that listing on 3.11. |
 | [09](chapter09) | Fun with Internet Explorer | `ch09` | `pycryptodome`, `pywin32` (Windows) | Windows only, except the crypto helpers. |
 | [10](chapter10) | Windows privilege escalation | `ch10` | `pywin32` (Windows), `wmi` (Windows) | Windows only. `bhvulnservice.zip` is the book's vulnerable service. |
 | [11](chapter11) | Automating offensive forensics | - | - | Needs Immunity Debugger (`immlib`, Python 2.7) and the Volatility 2 framework. Neither installs from PyPI. |
