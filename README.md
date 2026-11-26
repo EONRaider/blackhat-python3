@@ -78,8 +78,8 @@ With pip 25.1 or newer, you can also install a chapter's group straight from
 
 From 2.0.0 on, each [release](https://github.com/EONRaider/blackhat-python3/releases) publishes an
 image for `linux/amd64` and `linux/arm64` with every cross-platform chapter's
-dependencies and common network tools preinstalled. Until 2.0.0 is out, build the image yourself
-with the last command below:
+dependencies and common network tools preinstalled. Until 2.0.0 is out, clone the repository as in
+[Quick start](#quick-start) and build the image yourself with the last command below:
 
 ```shell
 docker run --rm -it ghcr.io/eonraider/blackhat-python3
@@ -133,7 +133,8 @@ cd blackhat-python3
 git sparse-checkout set chapter02 chapter03    # any chapters you want
 ```
 
-Or skip cloning entirely and use the [Docker image](#docker).
+From 2.0.0 on, you can also skip cloning entirely and use the
+[Docker image](#docker).
 
 ## Authorized use
 
