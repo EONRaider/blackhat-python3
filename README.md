@@ -29,7 +29,6 @@ the book. Every change made during the conversion is documented in
 - [Downloading only what you need](#downloading-only-what-you-need)
 - [Authorized use](#authorized-use)
 - [Contributing](#contributing)
-- [Translations](#translations)
 - [License and credits](#license-and-credits)
 
 ## Quick start
@@ -71,15 +70,16 @@ pip install -r requirements/ch04.txt # or just one chapter
 ```
 
 `requirements*.txt` carry version ranges. For the exact versions tested in CI, use
-`requirements-lock.txt` from the [latest release](https://github.com/EONRaider/blackhat-python3/releases/latest).
+`requirements-lock.txt` from each release, starting with 2.0.0.
 With pip 25.1 or newer, you can also install a chapter's group straight from
 `pyproject.toml` with `pip install --group ch04`.
 
 ### Docker
 
-Each [release](https://github.com/EONRaider/blackhat-python3/releases) publishes an
+From 2.0.0 on, each [release](https://github.com/EONRaider/blackhat-python3/releases) publishes an
 image for `linux/amd64` and `linux/arm64` with every cross-platform chapter's
-dependencies and common network tools preinstalled:
+dependencies and common network tools preinstalled. Until 2.0.0 is out, clone the repository as in
+[Quick start](#quick-start) and build the image yourself with the last command below:
 
 ```shell
 docker run --rm -it ghcr.io/eonraider/blackhat-python3
@@ -133,7 +133,8 @@ cd blackhat-python3
 git sparse-checkout set chapter02 chapter03    # any chapters you want
 ```
 
-Or skip cloning entirely and use the [Docker image](#docker).
+From 2.0.0 on, you can also skip cloning entirely and use the
+[Docker image](#docker).
 
 ## Authorized use
 
@@ -149,10 +150,6 @@ Bug fixes, compatibility fixes for newer libraries and documentation improvement
 welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the scope, the development
 workflow and how releases are cut. Report security issues as described in
 [SECURITY.md](SECURITY.md).
-
-## Translations
-
-- Turkish, by [Bedirhan Budak](https://github.com/bedirhanbudak): [`turkish-language` branch](https://github.com/EONRaider/blackhat-python3/tree/turkish-language)
 
 ## License and credits
 
